@@ -7,26 +7,31 @@ A 3D spell-FPS roguelike demo built in Godot 4.3.
 
 ---
 
-## Day 3 Demo
+## Day 4 Demo
 
-This is the Day 3 slice: two enemy types + die-and-retry roguelike loop.
+This is the Day 4 slice: three spells + looping floor.
 
 **What's included:**
 - Real Godot 4.3 3D project (CharacterBody3D + Camera3D)
 - Mouse look and WASD movement
 - Walkable dungeon with 4 rooms connected by corridors
-- **Projectile spell** - Cast magic projectiles that die on walls
-- **Crosshair HUD** - Aim with center-screen crosshair
+- **THREE spell types:**
+  - **Projectile Bolt (1)** - Fast magic projectile, dies on walls
+  - **Cone Blast (2)** - Area damage in front of player
+  - **Trap Rune (3)** - Place on ground, damages enemies that trigger it
+- **Spell switching** - Press 1, 2, 3 to switch spells
+- **Crosshair HUD** - Aim with center-screen crosshair, current spell displayed
 - **HP system** - Player health displayed on screen
 - **TWO enemy types:**
   - **Grunt** (melee) - Red capsule, chases and hits player in close range
   - **Shooter** (ranged) - Blue capsule, fires projectiles from distance
 - **Die-and-retry** - Death reloads the floor, restart from beginning
+- **Looping floor** - Continue playing after clearing enemies, floor runs indefinitely
 
-**What's NOT included yet (Day 4+):**
-- Multiple spell types (cone, trap)
-- Pixel art billboards (TODO)
+**What's NOT included yet (Day 5+):**
+- Pixel art billboards (separate PR)
 - Random room generation
+- Meta progression
 - Web export / GitHub Pages deployment
 
 ---
@@ -35,7 +40,8 @@ This is the Day 3 slice: two enemy types + die-and-retry roguelike loop.
 
 - **WASD**: Move
 - **Mouse**: Look around
-- **Left Click**: Cast projectile spell
+- **Left Click**: Cast current spell
+- **1, 2, 3**: Switch spells (Projectile, Cone, Trap)
 - **ESC**: Release/capture mouse
 
 ---
@@ -76,8 +82,8 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 - [x] Day 1: FPS movement + walkable 3D space
 - [x] Day 2: Projectile spell + HP + crosshair + basic enemy
 - [x] Day 3: Two enemy types (grunt + shooter) + die-and-retry
-- [ ] Day 4+: Multiple spell types (cone, trap)
-- [ ] Day 4+: Pixel art integration
+- [x] Day 4: Three spells (projectile, cone, trap) + looping floor
+- [ ] Day 4B: Pixel art integration (separate PR)
 - [ ] Day 5: Web export + GitHub Pages deployment
 
 ---
@@ -87,7 +93,8 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 This project demonstrates:
 - Godot 4 3D game development
 - Character controller implementation (physics, collision, camera)
-- Spell casting and projectile systems
+- Multiple spell systems (projectile, area, placement)
+- Spell switching and cooldown management
 - Enemy AI with pathfinding and combat
 - HP and damage systems
 - HUD and UI implementation
