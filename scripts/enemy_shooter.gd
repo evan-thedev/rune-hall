@@ -14,8 +14,22 @@ var is_dead = false
 
 const ENEMY_PROJECTILE = preload("res://scenes/enemy_projectile.tscn")
 
+@onready var sprite = $Sprite3D
+
 func _ready():
 	add_to_group("enemy")
+	
+	# Load all loot goblin sprites
+	sprite.idle_texture = preload("res://sprites/loot-goblin-idle.png")
+	sprite.walk_front_texture = preload("res://sprites/loot-goblin-walk-front.png")
+	sprite.walk_back_texture = preload("res://sprites/loot-goblin-walk-back.png")
+	sprite.walk_left_texture = preload("res://sprites/loot-goblin-walk-left.png")
+	sprite.walk_right_texture = preload("res://sprites/loot-goblin-walk-right.png")
+	sprite.attack_texture = preload("res://sprites/loot-goblin-attack.png")
+	sprite.flinch_texture = preload("res://sprites/loot-goblin-flinch.png")
+	sprite.death_texture = preload("res://sprites/loot-goblin-death.png")
+	
+	sprite.set_state(sprite.AnimState.IDLE)
 
 func _physics_process(delta):
 	if is_dead:
@@ -33,29 +47,32 @@ func _physics_process(delta):
 	if distance_to_player > ATTACK_RANGE:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
+		sprite.set_state(sprite.AnimState.WALK, direction)
 	elif distance_to_player < MIN_RANGE:
 		velocity.x = -direction.x * SPEED
 		velocity.z = -direction.z * SPEED
+		sprite.set_state(sprite.AnimState.WALK, -direction)
 	else:
 		velocity.x = 0
 		velocity.z = 0
-		try_attack()
+		if try_attack():
+			sprite.set_state(sprite.AnimState.ATTACK)
+		else:
+			sprite.set_state(sprite.AnimState.IDLE)
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
-	
-	if direction.length() > 0:
-		look_at(global_position + direction, Vector3.UP)
 
-func try_attack():
+func try_attack() -> bool:
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - last_attack_time < ATTACK_COOLDOWN:
-		return
+		return false
 	
 	last_attack_time = current_time
 	shoot_projectile()
+	return true
 
 func shoot_projectile():
 	var projectile = ENEMY_PROJECTILE.instantiate()
@@ -73,9 +90,16 @@ func take_damage(amount: float):
 	health -= amount
 	health = max(0, health)
 	
+	# Show flinch animation
+	if health > 0:
+		sprite.set_state(sprite.AnimState.FLINCH)
+	
 	if health <= 0:
 		die()
 
 func die():
 	is_dead = true
+	sprite.set_state(sprite.AnimState.DEATH)
+	# Wait for death animation (coin spill) before removing
+	await get_tree().create_timer(1.0).timeout
 	queue_free()
