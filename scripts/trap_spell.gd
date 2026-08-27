@@ -44,6 +44,11 @@ func trigger_trap(actor):
 		actor.take_damage(DAMAGE)
 	
 	spawn_ice_burst()
+	
+	$MeshInstance3D.visible = false
+	if has_node("OmniLight3D"):
+		$OmniLight3D.visible = false
+	
 	queue_free()
 
 func spawn_ice_burst():
@@ -55,21 +60,21 @@ func spawn_ice_burst():
 		var shard = CSGBox3D.new()
 		shard.size = Vector3(0.1, 0.8, 0.1)
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.6, 0.8, 1.0, 0.8)
-		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.albedo_color = Color(0.6, 0.8, 1.0, 1.0)
 		shard.material = mat
 		burst.add_child(shard)
 		
 		var angle = i * PI / 4.0
-		shard.position = Vector3(cos(angle) * 0.3, 0.4, sin(angle) * 0.3)
+		var start_pos = Vector3(cos(angle) * 0.3, 0.4, sin(angle) * 0.3)
+		var end_pos = Vector3(cos(angle) * 0.5, 1.5, sin(angle) * 0.5)
+		shard.position = start_pos
 		shard.rotation.y = angle
 		
-		var tween = create_tween()
+		var tween = burst.create_tween()
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_OUT)
-		tween.tween_property(shard, "position", 
-			Vector3(cos(angle) * 0.5, 1.5, sin(angle) * 0.5), 0.4)
-		tween.parallel().tween_property(shard, "modulate:a", 0.0, 0.4)
+		tween.tween_property(shard, "position", end_pos, 0.4)
+		tween.parallel().tween_property(shard.material, "albedo_color:a", 0.0, 0.4)
 	
-	await get_tree().create_timer(0.5).timeout
-	burst.queue_free()
+	var cleanup_timer = burst.get_tree().create_timer(0.5)
+	cleanup_timer.timeout.connect(func(): burst.queue_free())
