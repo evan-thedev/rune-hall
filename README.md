@@ -19,7 +19,7 @@ This is the Day 4 slice: three spells + looping floor.
   - **Projectile Bolt (1)** - Fast magic projectile, dies on walls
   - **Cone Blast (2)** - Area damage in front of player
   - **Trap Rune (3)** - Place on ground, damages enemies that trigger it
-- **Spell switching** - Press 1, 2, 3 to switch spells
+- **Spell selection** - Press 1, 2, or 3 to select spell (left-click casts selected spell)
 - **Crosshair HUD** - Aim with center-screen crosshair, current spell displayed
 - **HP system** - Player health displayed on screen
 - **TWO enemy types:**
@@ -40,8 +40,10 @@ This is the Day 4 slice: three spells + looping floor.
 
 - **WASD**: Move
 - **Mouse**: Look around
-- **Left Click**: Cast current spell
-- **1, 2, 3**: Switch spells (Projectile, Cone, Trap)
+- **1**: Select Projectile Bolt
+- **2**: Select Cone Blast
+- **3**: Select Trap Rune
+- **Left Click**: Cast currently selected spell
 - **ESC**: Release/capture mouse
 
 ---
