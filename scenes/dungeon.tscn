@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7y3wn6ym4x8a"]
+
+[ext_resource type="Script" path="res://scripts/dungeon_generator.gd" id="1_dungeon"]
+
+[node name="Dungeon" type="Node3D"]
+script = ExtResource("1_dungeon")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 10, 0)
+light_energy = 0.5
+shadow_enabled = true
