@@ -2,11 +2,20 @@ extends CharacterBody3D
 
 const SPEED = 7.0
 const MOUSE_SENSITIVITY = 0.003
+const PROJECTILE_SPELL = preload("res://scenes/projectile_spell.tscn")
 
 @onready var camera = $Camera3D
 
+var max_health = 100.0
+var health = 100.0
+var is_dead = false
+var spell_cooldown = 0.5
+var last_spell_time = -999.0
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	add_to_group("player")
+	update_hud()
 
 func _input(event):
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -21,6 +30,9 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _physics_process(delta):
+	if is_dead:
+		return
+	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	
@@ -35,3 +47,38 @@ func _physics_process(delta):
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 	
 	move_and_slide()
+	
+	if Input.is_action_pressed("cast_spell_1"):
+		cast_spell()
+
+func cast_spell():
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if current_time - last_spell_time < spell_cooldown:
+		return
+	
+	last_spell_time = current_time
+	
+	var projectile = PROJECTILE_SPELL.instantiate()
+	get_tree().root.add_child(projectile)
+	projectile.global_position = camera.global_position + camera.global_transform.basis.z * -0.5
+	projectile.set_direction(-camera.global_transform.basis.z)
+
+func take_damage(amount: float):
+	if is_dead:
+		return
+	
+	health -= amount
+	health = max(0, health)
+	update_hud()
+	
+	if health <= 0:
+		die()
+
+func die():
+	is_dead = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func update_hud():
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud:
+		hud.update_health(health, max_health)
