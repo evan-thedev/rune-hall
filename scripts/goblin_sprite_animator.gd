@@ -26,6 +26,7 @@ var death_texture: Texture2D
 enum AnimState { IDLE, WALK, ATTACK, FLINCH, DEATH }
 var current_state = AnimState.IDLE
 var walk_direction: Vector3 = Vector3.ZERO
+var animation_locked: bool = false
 
 func _ready():
 	billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -42,8 +43,16 @@ func _process(delta):
 		time_accumulator -= frame_time
 		current_frame = (current_frame + 1) % current_frames
 		frame = current_frame
+		
+		# Unlock animation when one-shot completes
+		if animation_locked and current_frame == 0:
+			animation_locked = false
 
 func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
+	# Don't interrupt locked one-shot animations
+	if animation_locked and new_state in [AnimState.IDLE, AnimState.WALK]:
+		return
+	
 	if current_state == new_state and direction.is_equal_approx(walk_direction):
 		return
 	
@@ -67,14 +76,17 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 			texture = attack_texture
 			hframes = hframes_attack
 			current_frames = hframes_attack
+			animation_locked = true
 		AnimState.FLINCH:
 			texture = flinch_texture
 			hframes = hframes_flinch
 			current_frames = hframes_flinch
+			animation_locked = true
 		AnimState.DEATH:
 			texture = death_texture
 			hframes = hframes_death
 			current_frames = hframes_death
+			animation_locked = true
 			is_playing = true
 
 func _set_walk_texture(direction: Vector3):
