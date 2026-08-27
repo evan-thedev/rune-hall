@@ -6,6 +6,7 @@ const ARM_TIME = 0.3
 const GLYPH_SPIN_SPEED = 2.0
 const GLYPH_FRAME_COUNT = 6
 const GLYPH_FRAME_DURATION = 0.1
+const FROST_BURST_SCRIPT = preload("res://scripts/frost_burst.gd")
 
 var time_alive = 0.0
 var is_armed = false
@@ -120,29 +121,7 @@ func spawn_ice_burst():
 	
 	sprite.texture = frames[0]
 	
-	var script = GDScript.new()
-	script.source_code = """
-extends Node3D
-
-var frames = []
-var sprite = null
-var current_frame = 0
-var frame_timer = 0.0
-const FRAME_DURATION = 0.08
-
-func _process(delta):
-	frame_timer += delta
-	if frame_timer >= FRAME_DURATION:
-		frame_timer = 0.0
-		current_frame += 1
-		if current_frame < frames.size():
-			if sprite:
-				sprite.texture = frames[current_frame]
-		else:
-			queue_free()
-"""
-	script.reload()
-	burst_anim.set_script(script)
+	burst_anim.set_script(FROST_BURST_SCRIPT)
 	burst_anim.set("frames", frames)
 	burst_anim.set("sprite", sprite)
 
