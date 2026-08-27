@@ -3,6 +3,8 @@ extends CharacterBody3D
 const SPEED = 7.0
 const MOUSE_SENSITIVITY = 0.003
 const PROJECTILE_SPELL = preload("res://scenes/projectile_spell.tscn")
+const CONE_SPELL = preload("res://scenes/cone_spell.tscn")
+const TRAP_SPELL = preload("res://scenes/trap_spell.tscn")
 
 @onready var camera = $Camera3D
 
@@ -11,6 +13,7 @@ var health = 100.0
 var is_dead = false
 var spell_cooldown = 0.5
 var last_spell_time = -999.0
+var current_spell = 1
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -28,6 +31,16 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	if event.is_action_pressed("cast_spell_1"):
+		current_spell = 1
+		update_spell_hud()
+	elif event.is_action_pressed("cast_spell_2"):
+		current_spell = 2
+		update_spell_hud()
+	elif event.is_action_pressed("cast_spell_3"):
+		current_spell = 3
+		update_spell_hud()
 
 func _physics_process(delta):
 	if is_dead:
@@ -48,7 +61,7 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
-	if Input.is_action_pressed("cast_spell_1"):
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		cast_spell()
 
 func cast_spell():
@@ -58,10 +71,39 @@ func cast_spell():
 	
 	last_spell_time = current_time
 	
+	if current_spell == 1:
+		cast_projectile()
+	elif current_spell == 2:
+		cast_cone()
+	elif current_spell == 3:
+		cast_trap()
+
+func cast_projectile():
 	var projectile = PROJECTILE_SPELL.instantiate()
 	get_tree().root.add_child(projectile)
 	projectile.global_position = camera.global_position + camera.global_transform.basis.z * -0.5
 	projectile.set_direction(-camera.global_transform.basis.z)
+
+func cast_cone():
+	var cone = CONE_SPELL.instantiate()
+	get_tree().root.add_child(cone)
+	cone.global_position = camera.global_position + camera.global_transform.basis.z * -2.0
+	cone.global_rotation = camera.global_rotation
+	cone.set_direction(-camera.global_transform.basis.z, camera.global_position)
+
+func cast_trap():
+	var space_state = get_world_3d().direct_space_state
+	var ray_origin = camera.global_position
+	var ray_end = ray_origin + camera.global_transform.basis.z * -5.0
+	
+	var query = PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
+	query.collision_mask = 1
+	var result = space_state.intersect_ray(query)
+	
+	if result:
+		var trap = TRAP_SPELL.instantiate()
+		get_tree().root.add_child(trap)
+		trap.global_position = result.position + Vector3(0, 0.1, 0)
 
 func take_damage(amount: float):
 	if is_dead:
@@ -83,3 +125,8 @@ func update_hud():
 	var hud = get_tree().get_first_node_in_group("hud")
 	if hud:
 		hud.update_health(health, max_health)
+
+func update_spell_hud():
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud:
+		hud.update_spell(current_spell)

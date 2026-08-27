@@ -31,6 +31,10 @@ layout_mode = 2
 layout_mode = 2
 text = "HP: 100 / 100"
 
+[node name="SpellLabel" type="Label" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Spell: Projectile (1)"
+
 [node name="Crosshair" type="Control" parent="Control"]
 layout_mode = 1
 anchors_preset = 8
