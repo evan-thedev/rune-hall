@@ -15,18 +15,24 @@ var is_dead = false
 const ENEMY_PROJECTILE = preload("res://scenes/enemy_projectile.tscn")
 
 @onready var sprite = $Sprite3D
-var idle_texture: Texture2D
-var walk_texture: Texture2D
-var attack_texture: Texture2D
+var idle_front_texture: Texture2D
+var walk_front_texture: Texture2D
+var attack_front_texture: Texture2D
+var idle_side_texture: Texture2D
+var walk_side_texture: Texture2D
+var attack_side_texture: Texture2D
 
 enum State { IDLE, WALK, ATTACK }
 var current_state = State.IDLE
 
 func _ready():
 	add_to_group("enemy")
-	idle_texture = preload("res://sprites/shooter_idle_front.png")
-	walk_texture = preload("res://sprites/shooter_walk_front.png")
-	attack_texture = preload("res://sprites/shooter_attack_front.png")
+	idle_front_texture = preload("res://sprites/shooter_idle_front.png")
+	walk_front_texture = preload("res://sprites/shooter_walk_front.png")
+	attack_front_texture = preload("res://sprites/shooter_attack_front.png")
+	idle_side_texture = preload("res://sprites/shooter_idle_side.png")
+	walk_side_texture = preload("res://sprites/shooter_walk_side.png")
+	attack_side_texture = preload("res://sprites/shooter_attack_side.png")
 	set_state(State.IDLE)
 
 func _physics_process(delta):
@@ -62,6 +68,12 @@ func _physics_process(delta):
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
+	
+	# Update sprite based on camera view
+	var camera = get_viewport().get_camera_3d()
+	if camera:
+		var forward = -global_transform.basis.z
+		sprite.update_sprite_for_camera(global_position, camera.global_position, forward)
 
 func try_attack() -> bool:
 	var current_time = Time.get_ticks_msec() / 1000.0
@@ -80,11 +92,14 @@ func set_state(new_state: State):
 	
 	match current_state:
 		State.IDLE:
-			sprite.set_texture_and_play(idle_texture)
+			sprite.set_textures(idle_front_texture, idle_side_texture)
+			sprite.set_texture_and_play(idle_front_texture)
 		State.WALK:
-			sprite.set_texture_and_play(walk_texture)
+			sprite.set_textures(walk_front_texture, walk_side_texture)
+			sprite.set_texture_and_play(walk_front_texture)
 		State.ATTACK:
-			sprite.set_texture_and_play(attack_texture)
+			sprite.set_textures(attack_front_texture, attack_side_texture)
+			sprite.set_texture_and_play(attack_front_texture)
 
 func shoot_projectile():
 	var projectile = ENEMY_PROJECTILE.instantiate()

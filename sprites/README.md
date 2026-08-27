@@ -12,18 +12,43 @@ Each sprite sheet should be:
 ## Sprite Sheets
 
 ### Grunt (Melee Enemy)
+
+**Front View:**
 - `grunt_idle_front.png` - 6-frame breathing/idle animation
 - `grunt_walk_front.png` - 6-frame walking animation  
 - `grunt_attack_front.png` - 6-frame melee attack animation
 
+**Side View:**
+- `grunt_idle_side.png` - 6-frame side idle animation
+- `grunt_walk_side.png` - 6-frame side walking animation
+- `grunt_attack_side.png` - 6-frame side melee attack animation
+
 ### Shooter (Ranged Enemy)
+
+**Front View:**
 - `shooter_idle_front.png` - 6-frame idle animation (staff visible in every frame)
 - `shooter_walk_front.png` - 6-frame walking animation
 - `shooter_attack_front.png` - 6-frame ranged attack animation
 
+**Side View:**
+- `shooter_idle_side.png` - 6-frame side idle (staff in every frame)
+- `shooter_walk_side.png` - 6-frame side walking
+- `shooter_attack_side.png` - 6-frame side attack (bolt from orb, bone feet visible)
+
 ## Implementation
 
-The sprites are used as billboard Sprite3D nodes that always face the camera. The `sprite_animator.gd` script handles frame cycling at 8 FPS. Enemy scripts automatically switch between idle/walk/attack animations based on their behavior state.
+The sprites use billboard Sprite3D nodes that always face the camera. The system automatically:
+- Switches between front and side views based on camera angle
+- Mirrors the side sprite when viewed from the left
+- Cycles through 6 frames at 8 FPS
+- Transitions between idle/walk/attack states based on enemy behavior
+
+## Camera-Relative Display
+
+The sprite system calculates the viewing angle and shows:
+- **Front sprites**: When camera is looking at front or back of enemy
+- **Side sprites**: When camera is looking at left or right of enemy
+- **Mirroring**: Left-facing views flip the side sprite horizontally
 
 ## Replacing Placeholders
 
