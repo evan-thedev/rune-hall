@@ -14,8 +14,20 @@ var is_dead = false
 
 const ENEMY_PROJECTILE = preload("res://scenes/enemy_projectile.tscn")
 
+@onready var sprite = $Sprite3D
+var idle_texture: Texture2D
+var walk_texture: Texture2D
+var attack_texture: Texture2D
+
+enum State { IDLE, WALK, ATTACK }
+var current_state = State.IDLE
+
 func _ready():
 	add_to_group("enemy")
+	idle_texture = preload("res://sprites/shooter_idle_front.png")
+	walk_texture = preload("res://sprites/shooter_walk_front.png")
+	attack_texture = preload("res://sprites/shooter_attack_front.png")
+	set_state(State.IDLE)
 
 func _physics_process(delta):
 	if is_dead:
@@ -33,29 +45,46 @@ func _physics_process(delta):
 	if distance_to_player > ATTACK_RANGE:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
+		set_state(State.WALK)
 	elif distance_to_player < MIN_RANGE:
 		velocity.x = -direction.x * SPEED
 		velocity.z = -direction.z * SPEED
+		set_state(State.WALK)
 	else:
 		velocity.x = 0
 		velocity.z = 0
-		try_attack()
+		if try_attack():
+			set_state(State.ATTACK)
+		else:
+			set_state(State.IDLE)
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
-	
-	if direction.length() > 0:
-		look_at(global_position + direction, Vector3.UP)
 
-func try_attack():
+func try_attack() -> bool:
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - last_attack_time < ATTACK_COOLDOWN:
-		return
+		return false
 	
 	last_attack_time = current_time
 	shoot_projectile()
+	return true
+
+func set_state(new_state: State):
+	if current_state == new_state:
+		return
+	
+	current_state = new_state
+	
+	match current_state:
+		State.IDLE:
+			sprite.set_texture_and_play(idle_texture)
+		State.WALK:
+			sprite.set_texture_and_play(walk_texture)
+		State.ATTACK:
+			sprite.set_texture_and_play(attack_texture)
 
 func shoot_projectile():
 	var projectile = ENEMY_PROJECTILE.instantiate()
