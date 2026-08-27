@@ -5,7 +5,7 @@ extends Sprite3D
 @export var hframes_walk: int = 6
 @export var hframes_idle: int = 1
 @export var hframes_attack: int = 5
-@export var hframes_flinch: int = 1
+@export var hframes_flinch: int = 4
 @export var hframes_death: int = 6
 
 var current_frame: int = 0
