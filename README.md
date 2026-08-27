@@ -7,23 +7,26 @@ A 3D spell-FPS roguelike demo built in Godot 4.3.
 
 ---
 
-## Day 2 Demo
+## Day 3 Demo
 
-This is the Day 2 slice: spell combat, HP system, and basic enemies.
+This is the Day 3 slice: two enemy types + die-and-retry roguelike loop.
 
 **What's included:**
 - Real Godot 4.3 3D project (CharacterBody3D + Camera3D)
 - Mouse look and WASD movement
 - Walkable dungeon with 4 rooms connected by corridors
-- **Projectile spell** - Cast magic projectiles at enemies
+- **Projectile spell** - Cast magic projectiles that die on walls
 - **Crosshair HUD** - Aim with center-screen crosshair
 - **HP system** - Player health displayed on screen
-- **Basic enemies** - Hostile enemies that chase and attack
+- **TWO enemy types:**
+  - **Grunt** (melee) - Red capsule, chases and hits player in close range
+  - **Shooter** (ranged) - Blue capsule, fires projectiles from distance
+- **Die-and-retry** - Death reloads the floor, restart from beginning
 
-**What's NOT included yet (Day 3+):**
+**What's NOT included yet (Day 4+):**
 - Multiple spell types (cone, trap)
-- Multiple enemy types (ranged)
-- Full roguelike mechanics (die-and-retry, random rooms)
+- Pixel art billboards (TODO)
+- Random room generation
 - Web export / GitHub Pages deployment
 
 ---
@@ -72,9 +75,9 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 
 - [x] Day 1: FPS movement + walkable 3D space
 - [x] Day 2: Projectile spell + HP + crosshair + basic enemy
-- [ ] Day 3+: Multiple spell types (cone, trap)
-- [ ] Day 3+: Multiple enemy types (ranged)
-- [ ] Day 3+: Full roguelike mechanics (die-and-retry)
+- [x] Day 3: Two enemy types (grunt + shooter) + die-and-retry
+- [ ] Day 4+: Multiple spell types (cone, trap)
+- [ ] Day 4+: Pixel art integration
 - [ ] Day 5: Web export + GitHub Pages deployment
 
 ---
