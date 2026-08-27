@@ -1,22 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://d4trap1234567"]
+[gd_scene load_steps=4 format=3 uid="uid://d4trap1234567"]
 
 [ext_resource type="Script" path="res://scripts/trap_spell.gd" id="1_trap"]
+[ext_resource type="Texture2D" path="res://sprites/frosttrap-glyph.png" id="2_glyph"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
 radius = 1.5
 height = 0.2
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
-top_radius = 1.2
-bottom_radius = 1.2
-height = 0.05
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.6, 0.8, 1.0, 0.9)
-emission_enabled = true
-emission = Color(0.4, 0.7, 1.0, 1)
-emission_energy_multiplier = 1.5
-transparency = 1
 
 [node name="TrapSpell" type="Area3D"]
 collision_layer = 2
@@ -27,9 +16,12 @@ script = ExtResource("1_trap")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CylinderShape3D_1")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CylinderMesh_1")
-surface_material_override/0 = SubResource("StandardMaterial3D_1")
+[node name="GlyphSprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.05, 0)
+pixel_size = 0.02
+billboard = 0
+texture_filter = 0
+texture = ExtResource("2_glyph")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 light_color = Color(0.6, 0.8, 1.0, 1)

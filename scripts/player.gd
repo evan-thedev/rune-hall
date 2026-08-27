@@ -7,6 +7,7 @@ const CONE_SPELL = preload("res://scenes/cone_spell.tscn")
 const TRAP_SPELL = preload("res://scenes/trap_spell.tscn")
 
 @onready var camera = $Camera3D
+@onready var viewmodel = $Camera3D/Viewmodel
 
 var max_health = 100.0
 var health = 100.0
@@ -14,6 +15,7 @@ var is_dead = false
 var spell_cooldown = 0.5
 var last_spell_time = -999.0
 var current_spell = 1
+var was_moving = false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -52,6 +54,12 @@ func _physics_process(delta):
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
+	var is_moving = direction.length() > 0
+	if is_moving != was_moving:
+		was_moving = is_moving
+		if viewmodel:
+			viewmodel.set_walking(is_moving)
+	
 	if direction:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
@@ -70,6 +78,9 @@ func cast_spell():
 		return
 	
 	last_spell_time = current_time
+	
+	if viewmodel:
+		viewmodel.cast_spell(current_spell)
 	
 	if current_spell == 1:
 		cast_projectile()
