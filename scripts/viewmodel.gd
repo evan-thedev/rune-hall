@@ -1,11 +1,6 @@
 extends Node3D
 
 @onready var sprite = $Sprite3D
-@onready var animation_player = $AnimationPlayer
-
-var current_animation = "idle"
-var is_walking = false
-var is_casting = false
 
 var idle_frames = []
 var walk_frames = []
@@ -13,40 +8,54 @@ var cast_fireball_frames = []
 var cast_lightning_frames = []
 var cast_frosttrap_frames = []
 
+var current_animation = "idle"
 var current_frame = 0
 var frame_time = 0.0
 var frame_duration = 0.1
+
+var is_walking = false
+var is_casting = false
+
+const FRAME_COUNT = 6
 
 func _ready():
 	load_sprite_frames()
 	play_animation("idle")
 
 func load_sprite_frames():
-	idle_frames = load_frames_from_sheet("res://sprites/hand-idle.png", 1, 1)
-	walk_frames = load_frames_from_sheet("res://sprites/hand-walk.png", 6, 1)
-	cast_fireball_frames = load_frames_from_sheet("res://sprites/hand-cast-fireball.png", 6, 1)
-	cast_lightning_frames = load_frames_from_sheet("res://sprites/hand-cast-lightning.png", 6, 1)
-	cast_frosttrap_frames = load_frames_from_sheet("res://sprites/hand-cast-frosttrap.png", 6, 1)
+	idle_frames = load_frames_from_sheet("res://sprites/hand-idle.png", FRAME_COUNT)
+	walk_frames = load_frames_from_sheet("res://sprites/hand-walk.png", FRAME_COUNT)
+	cast_fireball_frames = load_frames_from_sheet("res://sprites/hand-cast-fireball.png", FRAME_COUNT)
+	cast_lightning_frames = load_frames_from_sheet("res://sprites/hand-cast-lightning.png", FRAME_COUNT)
+	cast_frosttrap_frames = load_frames_from_sheet("res://sprites/hand-cast-frosttrap.png", FRAME_COUNT)
 
-func load_frames_from_sheet(path: String, frame_count: int, rows: int) -> Array:
+func load_frames_from_sheet(path: String, frame_count: int) -> Array:
 	var frames = []
 	if ResourceLoader.exists(path):
-		var texture = load(path)
-		if texture:
+		var sheet = load(path)
+		if sheet:
+			var frame_width = sheet.get_width() / frame_count
 			for i in range(frame_count):
-				frames.append(texture)
+				var atlas = AtlasTexture.new()
+				atlas.atlas = sheet
+				atlas.region = Rect2(i * frame_width, 0, frame_width, sheet.get_height())
+				frames.append(atlas)
 	return frames
 
 func _process(delta):
+	var frames = get_current_frames()
+	if frames.size() == 0:
+		return
+	
 	frame_time += delta
 	if frame_time >= frame_duration:
 		frame_time = 0.0
-		advance_frame()
-
-func advance_frame():
-	var frames = get_current_frames()
-	if frames.size() > 0:
-		current_frame = (current_frame + 1) % frames.size()
+		
+		if current_animation == "idle":
+			current_frame = 0
+		else:
+			current_frame = (current_frame + 1) % frames.size()
+		
 		update_sprite()
 
 func get_current_frames() -> Array:
@@ -91,9 +100,10 @@ func cast_spell(spell_type: int):
 		3:
 			play_animation("cast_frosttrap")
 	
-	await get_tree().create_timer(frame_duration * 6).timeout
+	await get_tree().create_timer(frame_duration * FRAME_COUNT).timeout
 	is_casting = false
 	if is_walking:
 		play_animation("walk")
 	else:
 		play_animation("idle")
+
