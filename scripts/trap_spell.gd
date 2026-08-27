@@ -4,16 +4,36 @@ const DAMAGE = 30.0
 const LIFETIME = 10.0
 const ARM_TIME = 0.3
 const GLYPH_SPIN_SPEED = 2.0
+const GLYPH_FRAME_COUNT = 6
+const GLYPH_FRAME_DURATION = 0.1
 
 var time_alive = 0.0
 var is_armed = false
 var has_triggered = false
+var glyph_frame_time = 0.0
+var current_glyph_frame = 0
+var glyph_frames = []
 
 @onready var glyph_sprite = $GlyphSprite3D
 
 func _ready():
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
+	load_glyph_frames()
+
+func load_glyph_frames():
+	if ResourceLoader.exists("res://sprites/frosttrap-glyph.png"):
+		var sheet = load("res://sprites/frosttrap-glyph.png")
+		if sheet:
+			for i in range(GLYPH_FRAME_COUNT):
+				var atlas = AtlasTexture.new()
+				atlas.atlas = sheet
+				var frame_width = sheet.get_width() / GLYPH_FRAME_COUNT
+				atlas.region = Rect2(i * frame_width, 0, frame_width, sheet.get_height())
+				glyph_frames.append(atlas)
+			
+			if glyph_sprite and glyph_frames.size() > 0:
+				glyph_sprite.texture = glyph_frames[0]
 
 func _physics_process(delta):
 	time_alive += delta
@@ -23,6 +43,12 @@ func _physics_process(delta):
 	
 	if glyph_sprite and is_armed:
 		glyph_sprite.rotate_y(GLYPH_SPIN_SPEED * delta)
+		
+		glyph_frame_time += delta
+		if glyph_frame_time >= GLYPH_FRAME_DURATION and glyph_frames.size() > 0:
+			glyph_frame_time = 0.0
+			current_glyph_frame = (current_glyph_frame + 1) % glyph_frames.size()
+			glyph_sprite.texture = glyph_frames[current_glyph_frame]
 	
 	if time_alive > LIFETIME:
 		queue_free()
@@ -63,23 +89,45 @@ func spawn_ice_burst():
 		spawn_ice_burst_fallback()
 		return
 	
-	var burst_sprite = Sprite3D.new()
-	burst_sprite.texture = load("res://sprites/frosttrap-burst.png")
-	burst_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	burst_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	burst_sprite.pixel_size = 0.01
+	var burst_anim = Node3D.new()
+	get_tree().root.add_child(burst_anim)
+	burst_anim.global_position = global_position
 	
-	get_tree().root.add_child(burst_sprite)
-	burst_sprite.global_position = global_position + Vector3(0, 0.5, 0)
+	var sprite = Sprite3D.new()
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	sprite.pixel_size = 0.02
+	sprite.position = Vector3(0, 0.5, 0)
+	burst_anim.add_child(sprite)
 	
-	var tween = burst_sprite.create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(burst_sprite, "scale", Vector3(2, 2, 2), 0.4)
-	tween.parallel().tween_property(burst_sprite, "modulate:a", 0.0, 0.4)
+	var sheet = load("res://sprites/frosttrap-burst.png")
+	const BURST_FRAME_COUNT = 5
+	const FRAME_DURATION = 0.08
 	
-	var cleanup_timer = burst_sprite.get_tree().create_timer(0.5)
-	cleanup_timer.timeout.connect(func(): burst_sprite.queue_free())
+	var frames = []
+	if sheet:
+		var frame_width = sheet.get_width() / BURST_FRAME_COUNT
+		for i in range(BURST_FRAME_COUNT):
+			var atlas = AtlasTexture.new()
+			atlas.atlas = sheet
+			atlas.region = Rect2(i * frame_width, 0, frame_width, sheet.get_height())
+			frames.append(atlas)
+	
+	if frames.size() == 0:
+		burst_anim.queue_free()
+		spawn_ice_burst_fallback()
+		return
+	
+	sprite.texture = frames[0]
+	
+	for i in range(frames.size()):
+		await get_tree().create_timer(FRAME_DURATION).timeout
+		if is_instance_valid(sprite):
+			sprite.texture = frames[i]
+	
+	await get_tree().create_timer(FRAME_DURATION).timeout
+	if is_instance_valid(burst_anim):
+		burst_anim.queue_free()
 
 func spawn_ice_burst_fallback():
 	var burst = Node3D.new()
