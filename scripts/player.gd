@@ -76,7 +76,8 @@ func take_damage(amount: float):
 
 func die():
 	is_dead = true
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	await get_tree().create_timer(1.0).timeout
+	get_tree().reload_current_scene()
 
 func update_hud():
 	var hud = get_tree().get_first_node_in_group("hud")

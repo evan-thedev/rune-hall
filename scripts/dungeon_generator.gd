@@ -3,7 +3,8 @@ extends Node3D
 const ROOM_SIZE = 10.0
 const CORRIDOR_WIDTH = 4.0
 const WALL_HEIGHT = 4.0
-const ENEMY_BASIC = preload("res://scenes/enemy_basic.tscn")
+const ENEMY_GRUNT = preload("res://scenes/enemy_basic.tscn")
+const ENEMY_SHOOTER = preload("res://scenes/enemy_shooter.tscn")
 
 func _ready():
 	generate_dungeon()
@@ -195,11 +196,16 @@ func spawn_enemies(room_positions: Array):
 	for i in range(1, room_positions.size()):
 		var room_center = room_positions[i] + Vector3(ROOM_SIZE/2, 1, ROOM_SIZE/2)
 		
-		var num_enemies = randi() % 2 + 1
+		var num_enemies = randi() % 2 + 2
 		for j in range(num_enemies):
 			var offset = Vector3(randf_range(-3, 3), 0, randf_range(-3, 3))
 			var enemy_pos = room_center + offset
 			
-			var enemy = ENEMY_BASIC.instantiate()
+			var enemy
+			if randf() > 0.5:
+				enemy = ENEMY_GRUNT.instantiate()
+			else:
+				enemy = ENEMY_SHOOTER.instantiate()
+			
 			add_child(enemy)
 			enemy.global_position = enemy_pos
