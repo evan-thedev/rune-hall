@@ -120,14 +120,31 @@ func spawn_ice_burst():
 	
 	sprite.texture = frames[0]
 	
-	for i in range(frames.size()):
-		await get_tree().create_timer(FRAME_DURATION).timeout
-		if is_instance_valid(sprite):
-			sprite.texture = frames[i]
-	
-	await get_tree().create_timer(FRAME_DURATION).timeout
-	if is_instance_valid(burst_anim):
-		burst_anim.queue_free()
+	var script = GDScript.new()
+	script.source_code = """
+extends Node3D
+
+var frames = []
+var sprite = null
+var current_frame = 0
+var frame_timer = 0.0
+const FRAME_DURATION = 0.08
+
+func _process(delta):
+	frame_timer += delta
+	if frame_timer >= FRAME_DURATION:
+		frame_timer = 0.0
+		current_frame += 1
+		if current_frame < frames.size():
+			if sprite:
+				sprite.texture = frames[current_frame]
+		else:
+			queue_free()
+"""
+	script.reload()
+	burst_anim.set_script(script)
+	burst_anim.set("frames", frames)
+	burst_anim.set("sprite", sprite)
 
 func spawn_ice_burst_fallback():
 	var burst = Node3D.new()
