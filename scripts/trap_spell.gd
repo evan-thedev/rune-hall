@@ -3,10 +3,13 @@ extends Area3D
 const DAMAGE = 30.0
 const LIFETIME = 10.0
 const ARM_TIME = 0.3
+const GLYPH_SPIN_SPEED = 2.0
 
 var time_alive = 0.0
 var is_armed = false
 var has_triggered = false
+
+@onready var glyph_sprite = $GlyphSprite3D
 
 func _ready():
 	body_entered.connect(_on_body_entered)
@@ -17,6 +20,9 @@ func _physics_process(delta):
 	
 	if time_alive >= ARM_TIME and not is_armed:
 		is_armed = true
+	
+	if glyph_sprite and is_armed:
+		glyph_sprite.rotate_y(GLYPH_SPIN_SPEED * delta)
 	
 	if time_alive > LIFETIME:
 		queue_free()
@@ -45,13 +51,37 @@ func trigger_trap(actor):
 	
 	spawn_ice_burst()
 	
-	$MeshInstance3D.visible = false
+	if glyph_sprite:
+		glyph_sprite.visible = false
 	if has_node("OmniLight3D"):
 		$OmniLight3D.visible = false
 	
 	queue_free()
 
 func spawn_ice_burst():
+	if not ResourceLoader.exists("res://sprites/frosttrap-burst.png"):
+		spawn_ice_burst_fallback()
+		return
+	
+	var burst_sprite = Sprite3D.new()
+	burst_sprite.texture = load("res://sprites/frosttrap-burst.png")
+	burst_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	burst_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	burst_sprite.pixel_size = 0.01
+	
+	get_tree().root.add_child(burst_sprite)
+	burst_sprite.global_position = global_position + Vector3(0, 0.5, 0)
+	
+	var tween = burst_sprite.create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(burst_sprite, "scale", Vector3(2, 2, 2), 0.4)
+	tween.parallel().tween_property(burst_sprite, "modulate:a", 0.0, 0.4)
+	
+	var cleanup_timer = burst_sprite.get_tree().create_timer(0.5)
+	cleanup_timer.timeout.connect(func(): burst_sprite.queue_free())
+
+func spawn_ice_burst_fallback():
 	var burst = Node3D.new()
 	get_tree().root.add_child(burst)
 	burst.global_position = global_position
