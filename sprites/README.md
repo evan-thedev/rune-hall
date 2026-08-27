@@ -16,32 +16,32 @@ Each sprite sheet should be:
 **Single Frame:**
 - `dagger-goblin-idle.png` - 1-frame idle pose
 
-**Multi-Frame Animations (6 frames each):**
+**Walk Animations (6 frames each):**
 - `dagger-goblin-walk-front.png` - Walking toward camera
 - `dagger-goblin-walk-back.png` - Walking away from camera
 - `dagger-goblin-walk-left.png` - Walking left
 - `dagger-goblin-walk-right.png` - Walking right
-- `dagger-goblin-attack.png` - Melee attack with dagger
-- `dagger-goblin-death.png` - Death animation
 
-**Special Animations:**
-- `dagger-goblin-flinch.png` - Hit reaction (1-2 frames)
+**Combat Animations:**
+- `dagger-goblin-attack.png` - 5-frame dagger slash
+- `dagger-goblin-flinch.png` - 4-frame hit reaction
+- `dagger-goblin-death.png` - 6-frame collapse (last frame = corpse with dagger on ground)
 
 ### Loot Goblin (Ranged Enemy)
 
 **Single Frame:**
 - `loot-goblin-idle.png` - 1-frame idle pose with treasure sack
 
-**Multi-Frame Animations (6 frames each):**
+**Walk Animations (6 frames each):**
 - `loot-goblin-walk-front.png` - Walking toward camera
 - `loot-goblin-walk-back.png` - Walking away from camera
 - `loot-goblin-walk-left.png` - Walking left
 - `loot-goblin-walk-right.png` - Walking right
-- `loot-goblin-attack.png` - Gold toss attack animation
-- `loot-goblin-death.png` - Death with coin spill
 
-**Special Animations:**
-- `loot-goblin-flinch.png` - Hit reaction (1-2 frames)
+**Combat Animations:**
+- `loot-goblin-attack.png` - 5-frame gold toss (ranged attack)
+- `loot-goblin-flinch.png` - 4-frame hit reaction
+- `loot-goblin-death.png` - 6-frame collapse with coin spill (last frame = corpse with loot on floor)
 
 ## Implementation
 
@@ -54,11 +54,11 @@ The sprites use billboard Sprite3D nodes that always face the camera. The system
 
 ## Animation States
 
-- **IDLE**: Single frame, no animation
+- **IDLE**: 1-frame idle pose
 - **WALK**: 6-frame directional animation (front/back/left/right chosen by movement)
-- **ATTACK**: 5-6 frame animation (melee dagger slash or gold coin toss)
-- **FLINCH**: 1-2 frame hit reaction
-- **DEATH**: 6-frame animation (dagger goblin falls, loot goblin coin spill)
+- **ATTACK**: 5-frame animation (dagger slash or gold toss)
+- **FLINCH**: 4-frame hit reaction
+- **DEATH**: 6-frame collapse animation (last frame shows corpse with dropped items)
 
 ## Replacing Placeholders
 
