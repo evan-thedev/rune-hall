@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://b8qm2kx5n7wjp"]
 
 [ext_resource type="Script" path="res://scripts/enemy_shooter.gd" id="1_shooter"]
-[ext_resource type="Script" path="res://scripts/sprite_animator.gd" id="2_sprite"]
+[ext_resource type="Script" path="res://scripts/goblin_sprite_animator.gd" id="2_sprite"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.5

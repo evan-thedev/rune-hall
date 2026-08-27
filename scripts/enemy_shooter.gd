@@ -15,25 +15,21 @@ var is_dead = false
 const ENEMY_PROJECTILE = preload("res://scenes/enemy_projectile.tscn")
 
 @onready var sprite = $Sprite3D
-var idle_front_texture: Texture2D
-var walk_front_texture: Texture2D
-var attack_front_texture: Texture2D
-var idle_side_texture: Texture2D
-var walk_side_texture: Texture2D
-var attack_side_texture: Texture2D
-
-enum State { IDLE, WALK, ATTACK }
-var current_state = State.IDLE
 
 func _ready():
 	add_to_group("enemy")
-	idle_front_texture = preload("res://sprites/shooter_idle_front.png")
-	walk_front_texture = preload("res://sprites/shooter_walk_front.png")
-	attack_front_texture = preload("res://sprites/shooter_attack_front.png")
-	idle_side_texture = preload("res://sprites/shooter_idle_side.png")
-	walk_side_texture = preload("res://sprites/shooter_walk_side.png")
-	attack_side_texture = preload("res://sprites/shooter_attack_side.png")
-	set_state(State.IDLE)
+	
+	# Load all loot goblin sprites
+	sprite.idle_texture = preload("res://sprites/loot-goblin-idle.png")
+	sprite.walk_front_texture = preload("res://sprites/loot-goblin-walk-front.png")
+	sprite.walk_back_texture = preload("res://sprites/loot-goblin-walk-back.png")
+	sprite.walk_left_texture = preload("res://sprites/loot-goblin-walk-left.png")
+	sprite.walk_right_texture = preload("res://sprites/loot-goblin-walk-right.png")
+	sprite.attack_texture = preload("res://sprites/loot-goblin-attack.png")
+	sprite.flinch_texture = preload("res://sprites/loot-goblin-flinch.png")
+	sprite.death_texture = preload("res://sprites/loot-goblin-death.png")
+	
+	sprite.set_state(sprite.AnimState.IDLE)
 
 func _physics_process(delta):
 	if is_dead:
@@ -51,29 +47,23 @@ func _physics_process(delta):
 	if distance_to_player > ATTACK_RANGE:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
-		set_state(State.WALK)
+		sprite.set_state(sprite.AnimState.WALK, direction)
 	elif distance_to_player < MIN_RANGE:
 		velocity.x = -direction.x * SPEED
 		velocity.z = -direction.z * SPEED
-		set_state(State.WALK)
+		sprite.set_state(sprite.AnimState.WALK, -direction)
 	else:
 		velocity.x = 0
 		velocity.z = 0
 		if try_attack():
-			set_state(State.ATTACK)
+			sprite.set_state(sprite.AnimState.ATTACK)
 		else:
-			set_state(State.IDLE)
+			sprite.set_state(sprite.AnimState.IDLE)
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 	
 	move_and_slide()
-	
-	# Update sprite based on camera view
-	var camera = get_viewport().get_camera_3d()
-	if camera:
-		var forward = -global_transform.basis.z
-		sprite.update_sprite_for_camera(global_position, camera.global_position, forward)
 
 func try_attack() -> bool:
 	var current_time = Time.get_ticks_msec() / 1000.0
@@ -83,23 +73,6 @@ func try_attack() -> bool:
 	last_attack_time = current_time
 	shoot_projectile()
 	return true
-
-func set_state(new_state: State):
-	if current_state == new_state:
-		return
-	
-	current_state = new_state
-	
-	match current_state:
-		State.IDLE:
-			sprite.set_textures(idle_front_texture, idle_side_texture)
-			sprite.set_texture_and_play(idle_front_texture)
-		State.WALK:
-			sprite.set_textures(walk_front_texture, walk_side_texture)
-			sprite.set_texture_and_play(walk_front_texture)
-		State.ATTACK:
-			sprite.set_textures(attack_front_texture, attack_side_texture)
-			sprite.set_texture_and_play(attack_front_texture)
 
 func shoot_projectile():
 	var projectile = ENEMY_PROJECTILE.instantiate()
@@ -117,9 +90,16 @@ func take_damage(amount: float):
 	health -= amount
 	health = max(0, health)
 	
+	# Show flinch animation
+	if health > 0:
+		sprite.set_state(sprite.AnimState.FLINCH)
+	
 	if health <= 0:
 		die()
 
 func die():
 	is_dead = true
+	sprite.set_state(sprite.AnimState.DEATH)
+	# Wait for death animation (coin spill) before removing
+	await get_tree().create_timer(1.0).timeout
 	queue_free()

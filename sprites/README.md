@@ -1,54 +1,64 @@
 # Sprite Assets
 
-This directory contains sprite sheets for enemy characters. The current files are 1x1 pixel placeholders.
+This directory contains sprite sheets for goblin enemies with black (#000000) transparency.
 
 ## Expected Format
 
 Each sprite sheet should be:
-- **Dimensions**: 6 horizontal frames (approximately 170x284 pixels total, ~28x47 per frame)
-- **Format**: PNG with magenta (#FF00FF) background for transparency
+- **Format**: PNG with black (#000000) background for transparency
 - **Style**: Pixel art with nearest-neighbor filtering (no smoothing)
+- **Frames**: Variable per animation type (see below)
 
-## Sprite Sheets
+## Goblin Sprite Sheets
 
-### Grunt (Melee Enemy)
+### Dagger Goblin (Melee Enemy)
 
-**Front View:**
-- `grunt_idle_front.png` - 6-frame breathing/idle animation
-- `grunt_walk_front.png` - 6-frame walking animation  
-- `grunt_attack_front.png` - 6-frame melee attack animation
+**Single Frame:**
+- `dagger-goblin-idle.png` - 1-frame idle pose
 
-**Side View:**
-- `grunt_idle_side.png` - 6-frame side idle animation
-- `grunt_walk_side.png` - 6-frame side walking animation
-- `grunt_attack_side.png` - 6-frame side melee attack animation
+**Multi-Frame Animations (6 frames each):**
+- `dagger-goblin-walk-front.png` - Walking toward camera
+- `dagger-goblin-walk-back.png` - Walking away from camera
+- `dagger-goblin-walk-left.png` - Walking left
+- `dagger-goblin-walk-right.png` - Walking right
+- `dagger-goblin-attack.png` - Melee attack with dagger
+- `dagger-goblin-death.png` - Death animation
 
-### Shooter (Ranged Enemy)
+**Special Animations:**
+- `dagger-goblin-flinch.png` - Hit reaction (1-2 frames)
 
-**Front View:**
-- `shooter_idle_front.png` - 6-frame idle animation (staff visible in every frame)
-- `shooter_walk_front.png` - 6-frame walking animation
-- `shooter_attack_front.png` - 6-frame ranged attack animation
+### Loot Goblin (Ranged Enemy)
 
-**Side View:**
-- `shooter_idle_side.png` - 6-frame side idle (staff in every frame)
-- `shooter_walk_side.png` - 6-frame side walking
-- `shooter_attack_side.png` - 6-frame side attack (bolt from orb, bone feet visible)
+**Single Frame:**
+- `loot-goblin-idle.png` - 1-frame idle pose with treasure sack
+
+**Multi-Frame Animations (6 frames each):**
+- `loot-goblin-walk-front.png` - Walking toward camera
+- `loot-goblin-walk-back.png` - Walking away from camera
+- `loot-goblin-walk-left.png` - Walking left
+- `loot-goblin-walk-right.png` - Walking right
+- `loot-goblin-attack.png` - Gold toss attack animation
+- `loot-goblin-death.png` - Death with coin spill
+
+**Special Animations:**
+- `loot-goblin-flinch.png` - Hit reaction (1-2 frames)
 
 ## Implementation
 
 The sprites use billboard Sprite3D nodes that always face the camera. The system automatically:
-- Switches between front and side views based on camera angle
-- Mirrors the side sprite when viewed from the left
-- Cycles through 6 frames at 8 FPS
-- Transitions between idle/walk/attack states based on enemy behavior
+- Chooses correct walk direction sprite based on movement (front/back/left/right)
+- Plays attack animations when enemies attack
+- Shows flinch animation when taking damage
+- Plays death animation before enemy removal
+- Cycles through frames at 8 FPS for multi-frame animations
 
-## Camera-Relative Display
+## Animation States
 
-The sprite system calculates the viewing angle and shows:
-- **Front sprites**: When camera is looking at front or back of enemy
-- **Side sprites**: When camera is looking at left or right of enemy
-- **Mirroring**: Left-facing views flip the side sprite horizontally
+- **IDLE**: Single frame, no animation
+- **WALK**: 6-frame directional animation (front/back/left/right chosen by movement)
+- **ATTACK**: 5-6 frame animation (melee dagger slash or gold coin toss)
+- **FLINCH**: 1-2 frame hit reaction
+- **DEATH**: 6-frame animation (dagger goblin falls, loot goblin coin spill)
 
 ## Replacing Placeholders
 
@@ -60,4 +70,4 @@ To replace the placeholder sprites:
 The import settings are pre-configured for:
 - Nearest-neighbor filtering (no blur)
 - No compression (crisp pixels)
-- Transparent magenta background
+- Black (#000000) background treated as transparent
