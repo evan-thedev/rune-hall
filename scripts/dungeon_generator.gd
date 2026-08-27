@@ -15,15 +15,22 @@ func generate_dungeon():
 		Vector3(0, 0, ROOM_SIZE + CORRIDOR_WIDTH),
 	]
 	
-	for pos in room_positions:
-		create_room(pos)
+	var door_configs = [
+		{"north": false, "south": true, "east": true, "west": false},
+		{"north": false, "south": true, "east": false, "west": true},
+		{"north": true, "south": false, "east": false, "west": true},
+		{"north": true, "south": false, "east": true, "west": false},
+	]
+	
+	for i in range(room_positions.size()):
+		create_room(room_positions[i], door_configs[i])
 	
 	create_corridor(Vector3(ROOM_SIZE, 0, 0), Vector3(1, 0, 0), CORRIDOR_WIDTH)
 	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH, 0, ROOM_SIZE), Vector3(0, 0, 1), CORRIDOR_WIDTH)
 	create_corridor(Vector3(ROOM_SIZE, 0, ROOM_SIZE + CORRIDOR_WIDTH), Vector3(-1, 0, 0), CORRIDOR_WIDTH)
 	create_corridor(Vector3(0, 0, ROOM_SIZE), Vector3(0, 0, -1), CORRIDOR_WIDTH)
 
-func create_room(pos: Vector3):
+func create_room(pos: Vector3, doors: Dictionary):
 	var floor_mesh = CSGBox3D.new()
 	floor_mesh.size = Vector3(ROOM_SIZE, 0.5, ROOM_SIZE)
 	floor_mesh.position = pos + Vector3(ROOM_SIZE/2, -0.25, ROOM_SIZE/2)
@@ -34,36 +41,98 @@ func create_room(pos: Vector3):
 	mat.albedo_color = Color(0.3, 0.3, 0.35)
 	floor_mesh.material = mat
 	
-	create_walls(pos)
+	create_walls_with_doors(pos, doors)
 	add_lighting(pos + Vector3(ROOM_SIZE/2, WALL_HEIGHT - 0.5, ROOM_SIZE/2))
 
-func create_walls(room_pos: Vector3):
+func create_walls_with_doors(room_pos: Vector3, doors: Dictionary):
+	var wall_thickness = 0.5
+	var door_width = CORRIDOR_WIDTH
+	var wall_segment_size = (ROOM_SIZE - door_width) / 2.0
+	
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = Color(0.4, 0.35, 0.3)
+	
+	if not doors.get("north", false):
+		var wall = CSGBox3D.new()
+		wall.size = Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness)
+		wall.position = room_pos + Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, -wall_thickness/2)
+		wall.use_collision = true
+		wall.material = mat
+		add_child(wall)
+	else:
+		create_wall_with_door_opening(room_pos, Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, -wall_thickness/2), 
+		                               Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness), true, mat)
+	
+	if not doors.get("south", false):
+		var wall = CSGBox3D.new()
+		wall.size = Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness)
+		wall.position = room_pos + Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, ROOM_SIZE + wall_thickness/2)
+		wall.use_collision = true
+		wall.material = mat
+		add_child(wall)
+	else:
+		create_wall_with_door_opening(room_pos, Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, ROOM_SIZE + wall_thickness/2),
+		                               Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness), true, mat)
+	
+	if not doors.get("west", false):
+		var wall = CSGBox3D.new()
+		wall.size = Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE)
+		wall.position = room_pos + Vector3(-wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2)
+		wall.use_collision = true
+		wall.material = mat
+		add_child(wall)
+	else:
+		create_wall_with_door_opening(room_pos, Vector3(-wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2),
+		                               Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE), false, mat)
+	
+	if not doors.get("east", false):
+		var wall = CSGBox3D.new()
+		wall.size = Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE)
+		wall.position = room_pos + Vector3(ROOM_SIZE + wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2)
+		wall.use_collision = true
+		wall.material = mat
+		add_child(wall)
+	else:
+		create_wall_with_door_opening(room_pos, Vector3(ROOM_SIZE + wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2),
+		                               Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE), false, mat)
+
+func create_wall_with_door_opening(room_pos: Vector3, base_pos: Vector3, base_size: Vector3, 
+                                    is_horizontal: bool, mat: StandardMaterial3D):
+	var door_width = CORRIDOR_WIDTH
 	var wall_thickness = 0.5
 	
-	var wall_positions = [
-		Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, -wall_thickness/2),
-		Vector3(ROOM_SIZE/2, WALL_HEIGHT/2, ROOM_SIZE + wall_thickness/2),
-		Vector3(-wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2),
-		Vector3(ROOM_SIZE + wall_thickness/2, WALL_HEIGHT/2, ROOM_SIZE/2),
-	]
-	
-	var wall_sizes = [
-		Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness),
-		Vector3(ROOM_SIZE, WALL_HEIGHT, wall_thickness),
-		Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE),
-		Vector3(wall_thickness, WALL_HEIGHT, ROOM_SIZE),
-	]
-	
-	for i in range(wall_positions.size()):
-		var wall = CSGBox3D.new()
-		wall.size = wall_sizes[i]
-		wall.position = room_pos + wall_positions[i]
-		wall.use_collision = true
-		add_child(wall)
+	if is_horizontal:
+		var segment_width = (ROOM_SIZE - door_width) / 2.0
 		
-		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.4, 0.35, 0.3)
-		wall.material = mat
+		var wall1 = CSGBox3D.new()
+		wall1.size = Vector3(segment_width, WALL_HEIGHT, wall_thickness)
+		wall1.position = room_pos + Vector3(segment_width/2, WALL_HEIGHT/2, base_pos.z)
+		wall1.use_collision = true
+		wall1.material = mat
+		add_child(wall1)
+		
+		var wall2 = CSGBox3D.new()
+		wall2.size = Vector3(segment_width, WALL_HEIGHT, wall_thickness)
+		wall2.position = room_pos + Vector3(ROOM_SIZE - segment_width/2, WALL_HEIGHT/2, base_pos.z)
+		wall2.use_collision = true
+		wall2.material = mat
+		add_child(wall2)
+	else:
+		var segment_width = (ROOM_SIZE - door_width) / 2.0
+		
+		var wall1 = CSGBox3D.new()
+		wall1.size = Vector3(wall_thickness, WALL_HEIGHT, segment_width)
+		wall1.position = room_pos + Vector3(base_pos.x, WALL_HEIGHT/2, segment_width/2)
+		wall1.use_collision = true
+		wall1.material = mat
+		add_child(wall1)
+		
+		var wall2 = CSGBox3D.new()
+		wall2.size = Vector3(wall_thickness, WALL_HEIGHT, segment_width)
+		wall2.position = room_pos + Vector3(base_pos.x, WALL_HEIGHT/2, ROOM_SIZE - segment_width/2)
+		wall2.use_collision = true
+		wall2.material = mat
+		add_child(wall2)
 
 func create_corridor(start_pos: Vector3, direction: Vector3, length: float):
 	var floor_mesh = CSGBox3D.new()
