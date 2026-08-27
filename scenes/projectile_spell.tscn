@@ -16,6 +16,9 @@ emission = Color(0.541176, 0.364706, 0.964706, 1)
 emission_energy_multiplier = 2.0
 
 [node name="ProjectileSpell" type="Area3D"]
+collision_layer = 2
+collision_mask = 1
+monitoring = true
 script = ExtResource("1_spell")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

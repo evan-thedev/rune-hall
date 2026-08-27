@@ -22,8 +22,12 @@ func set_direction(dir: Vector3):
 	direction = dir.normalized()
 
 func _on_body_entered(body):
+	if body.is_in_group("player"):
+		return
+	
 	if body.is_in_group("enemy") and body.has_method("take_damage"):
 		body.take_damage(DAMAGE)
+	
 	queue_free()
 
 func _on_area_entered(area):
