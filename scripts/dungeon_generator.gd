@@ -25,10 +25,10 @@ func generate_dungeon():
 	for i in range(room_positions.size()):
 		create_room(room_positions[i], door_configs[i])
 	
-	create_corridor(Vector3(ROOM_SIZE, 0, 0), Vector3(1, 0, 0), CORRIDOR_WIDTH)
-	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH, 0, ROOM_SIZE), Vector3(0, 0, 1), CORRIDOR_WIDTH)
-	create_corridor(Vector3(ROOM_SIZE, 0, ROOM_SIZE + CORRIDOR_WIDTH), Vector3(-1, 0, 0), CORRIDOR_WIDTH)
-	create_corridor(Vector3(0, 0, ROOM_SIZE), Vector3(0, 0, -1), CORRIDOR_WIDTH)
+	create_corridor(Vector3(ROOM_SIZE, 0, ROOM_SIZE/2), Vector3(1, 0, 0), CORRIDOR_WIDTH)
+	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH + ROOM_SIZE/2, 0, ROOM_SIZE), Vector3(0, 0, 1), CORRIDOR_WIDTH)
+	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH, 0, ROOM_SIZE + CORRIDOR_WIDTH + ROOM_SIZE/2), Vector3(-1, 0, 0), CORRIDOR_WIDTH)
+	create_corridor(Vector3(ROOM_SIZE/2, 0, ROOM_SIZE + CORRIDOR_WIDTH), Vector3(0, 0, -1), CORRIDOR_WIDTH)
 
 func create_room(pos: Vector3, doors: Dictionary):
 	var floor_mesh = CSGBox3D.new()
