@@ -3,6 +3,7 @@ extends Node3D
 const ROOM_SIZE = 10.0
 const CORRIDOR_WIDTH = 4.0
 const WALL_HEIGHT = 4.0
+const ENEMY_BASIC = preload("res://scenes/enemy_basic.tscn")
 
 func _ready():
 	generate_dungeon()
@@ -29,6 +30,8 @@ func generate_dungeon():
 	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH + ROOM_SIZE/2, 0, ROOM_SIZE), Vector3(0, 0, 1), CORRIDOR_WIDTH)
 	create_corridor(Vector3(ROOM_SIZE + CORRIDOR_WIDTH, 0, ROOM_SIZE + CORRIDOR_WIDTH + ROOM_SIZE/2), Vector3(-1, 0, 0), CORRIDOR_WIDTH)
 	create_corridor(Vector3(ROOM_SIZE/2, 0, ROOM_SIZE + CORRIDOR_WIDTH), Vector3(0, 0, -1), CORRIDOR_WIDTH)
+	
+	spawn_enemies(room_positions)
 
 func create_room(pos: Vector3, doors: Dictionary):
 	var floor_mesh = CSGBox3D.new()
@@ -187,3 +190,16 @@ func add_lighting(pos: Vector3):
 	light.light_color = Color(1.0, 0.9, 0.7)
 	light.omni_range = 15.0
 	add_child(light)
+
+func spawn_enemies(room_positions: Array):
+	for i in range(1, room_positions.size()):
+		var room_center = room_positions[i] + Vector3(ROOM_SIZE/2, 1, ROOM_SIZE/2)
+		
+		var num_enemies = randi() % 2 + 1
+		for j in range(num_enemies):
+			var offset = Vector3(randf_range(-3, 3), 0, randf_range(-3, 3))
+			var enemy_pos = room_center + offset
+			
+			var enemy = ENEMY_BASIC.instantiate()
+			add_child(enemy)
+			enemy.global_position = enemy_pos

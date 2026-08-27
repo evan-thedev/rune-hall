@@ -7,20 +7,23 @@ A 3D spell-FPS roguelike demo built in Godot 4.3.
 
 ---
 
-## Day 1 Demo
+## Day 2 Demo
 
-This is the Day 1 slice: basic FPS movement in a walkable 3D dungeon.
+This is the Day 2 slice: spell combat, HP system, and basic enemies.
 
 **What's included:**
 - Real Godot 4.3 3D project (CharacterBody3D + Camera3D)
 - Mouse look and WASD movement
-- Collision system that stops the player at walls
-- A simple dungeon layout with 4 rooms connected by corridors
+- Walkable dungeon with 4 rooms connected by corridors
+- **Projectile spell** - Cast magic projectiles at enemies
+- **Crosshair HUD** - Aim with center-screen crosshair
+- **HP system** - Player health displayed on screen
+- **Basic enemies** - Hostile enemies that chase and attack
 
-**What's NOT included yet (Day 2):**
-- Spell casting system (3 spells planned)
-- Enemy AI (2 types planned)
-- Roguelike mechanics
+**What's NOT included yet (Day 3+):**
+- Multiple spell types (cone, trap)
+- Multiple enemy types (ranged)
+- Full roguelike mechanics (die-and-retry, random rooms)
 - Web export / GitHub Pages deployment
 
 ---
@@ -29,6 +32,7 @@ This is the Day 1 slice: basic FPS movement in a walkable 3D dungeon.
 
 - **WASD**: Move
 - **Mouse**: Look around
+- **Left Click**: Cast projectile spell
 - **ESC**: Release/capture mouse
 
 ---
@@ -67,10 +71,11 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 ## Roadmap
 
 - [x] Day 1: FPS movement + walkable 3D space
-- [ ] Day 2: 3 spell types (projectile, cone, trap)
-- [ ] Day 2: 2 enemy types (melee, ranged)
-- [ ] Day 2: One-floor roguelike run (die-and-retry)
-- [ ] Day 2: Web export + GitHub Pages deployment
+- [x] Day 2: Projectile spell + HP + crosshair + basic enemy
+- [ ] Day 3+: Multiple spell types (cone, trap)
+- [ ] Day 3+: Multiple enemy types (ranged)
+- [ ] Day 3+: Full roguelike mechanics (die-and-retry)
+- [ ] Day 5: Web export + GitHub Pages deployment
 
 ---
 
@@ -79,6 +84,10 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 This project demonstrates:
 - Godot 4 3D game development
 - Character controller implementation (physics, collision, camera)
+- Spell casting and projectile systems
+- Enemy AI with pathfinding and combat
+- HP and damage systems
+- HUD and UI implementation
 - Procedural level generation
 - Clean, modular GDScript architecture
 
