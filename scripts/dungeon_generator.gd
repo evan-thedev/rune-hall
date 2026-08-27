@@ -143,9 +143,42 @@ func create_corridor(start_pos: Vector3, direction: Vector3, length: float):
 	floor_mesh.use_collision = true
 	add_child(floor_mesh)
 	
-	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.25, 0.25, 0.3)
-	floor_mesh.material = mat
+	var floor_mat = StandardMaterial3D.new()
+	floor_mat.albedo_color = Color(0.25, 0.25, 0.3)
+	floor_mesh.material = floor_mat
+	
+	var wall_mat = StandardMaterial3D.new()
+	wall_mat.albedo_color = Color(0.4, 0.35, 0.3)
+	var wall_thickness = 0.5
+	
+	if abs(direction.x) > 0:
+		var wall1 = CSGBox3D.new()
+		wall1.size = Vector3(length, WALL_HEIGHT, wall_thickness)
+		wall1.position = start_pos + direction * length/2 + Vector3(0, WALL_HEIGHT/2, -CORRIDOR_WIDTH/2 - wall_thickness/2)
+		wall1.use_collision = true
+		wall1.material = wall_mat
+		add_child(wall1)
+		
+		var wall2 = CSGBox3D.new()
+		wall2.size = Vector3(length, WALL_HEIGHT, wall_thickness)
+		wall2.position = start_pos + direction * length/2 + Vector3(0, WALL_HEIGHT/2, CORRIDOR_WIDTH/2 + wall_thickness/2)
+		wall2.use_collision = true
+		wall2.material = wall_mat
+		add_child(wall2)
+	else:
+		var wall1 = CSGBox3D.new()
+		wall1.size = Vector3(wall_thickness, WALL_HEIGHT, length)
+		wall1.position = start_pos + direction * length/2 + Vector3(-CORRIDOR_WIDTH/2 - wall_thickness/2, WALL_HEIGHT/2, 0)
+		wall1.use_collision = true
+		wall1.material = wall_mat
+		add_child(wall1)
+		
+		var wall2 = CSGBox3D.new()
+		wall2.size = Vector3(wall_thickness, WALL_HEIGHT, length)
+		wall2.position = start_pos + direction * length/2 + Vector3(CORRIDOR_WIDTH/2 + wall_thickness/2, WALL_HEIGHT/2, 0)
+		wall2.use_collision = true
+		wall2.material = wall_mat
+		add_child(wall2)
 
 func add_lighting(pos: Vector3):
 	var light = OmniLight3D.new()
