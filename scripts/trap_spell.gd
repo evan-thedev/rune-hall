@@ -6,7 +6,7 @@ const ARM_TIME = 0.3
 
 var time_alive = 0.0
 var is_armed = false
-var triggered_enemies = []
+var has_triggered = false
 
 func _ready():
 	body_entered.connect(_on_body_entered)
@@ -22,23 +22,54 @@ func _physics_process(delta):
 		queue_free()
 
 func _on_body_entered(body):
-	if not is_armed:
+	if not is_armed or has_triggered:
 		return
 	
-	if body.is_in_group("enemy") and body.has_method("take_damage"):
-		if body not in triggered_enemies:
-			triggered_enemies.append(body)
-			body.take_damage(DAMAGE)
-			queue_free()
+	if body.is_in_group("player") or body.is_in_group("enemy"):
+		trigger_trap(body)
 
 func _on_area_entered(area):
-	if not is_armed:
+	if not is_armed or has_triggered:
 		return
 	
 	if area.is_in_group("enemy"):
 		var enemy = area.get_parent()
-		if enemy and enemy.has_method("take_damage"):
-			if enemy not in triggered_enemies:
-				triggered_enemies.append(enemy)
-				enemy.take_damage(DAMAGE)
-				queue_free()
+		if enemy:
+			trigger_trap(enemy)
+
+func trigger_trap(actor):
+	has_triggered = true
+	
+	if actor.has_method("take_damage"):
+		actor.take_damage(DAMAGE)
+	
+	spawn_ice_burst()
+	queue_free()
+
+func spawn_ice_burst():
+	var burst = Node3D.new()
+	get_tree().root.add_child(burst)
+	burst.global_position = global_position
+	
+	for i in range(8):
+		var shard = CSGBox3D.new()
+		shard.size = Vector3(0.1, 0.8, 0.1)
+		var mat = StandardMaterial3D.new()
+		mat.albedo_color = Color(0.6, 0.8, 1.0, 0.8)
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		shard.material = mat
+		burst.add_child(shard)
+		
+		var angle = i * PI / 4.0
+		shard.position = Vector3(cos(angle) * 0.3, 0.4, sin(angle) * 0.3)
+		shard.rotation.y = angle
+		
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.tween_property(shard, "position", 
+			Vector3(cos(angle) * 0.5, 1.5, sin(angle) * 0.5), 0.4)
+		tween.parallel().tween_property(shard, "modulate:a", 0.0, 0.4)
+	
+	await get_tree().create_timer(0.5).timeout
+	burst.queue_free()
