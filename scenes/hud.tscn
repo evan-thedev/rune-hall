@@ -31,10 +31,6 @@ layout_mode = 2
 layout_mode = 2
 text = "HP: 100 / 100"
 
-[node name="SpellLabel" type="Label" parent="Control/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Spell: Projectile (1)"
-
 [node name="Crosshair" type="Control" parent="Control"]
 layout_mode = 1
 anchors_preset = 8
@@ -79,3 +75,133 @@ offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0.8)
+
+[node name="Hotbar" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+visible = false
+
+[node name="Slot1" type="Control" parent="Control/Hotbar"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Control/Hotbar/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="Control/Hotbar/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 5
+expand_mode = 1
+texture_filter = 0
+
+[node name="Label" type="Label" parent="Control/Hotbar/Slot1"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -20.0
+offset_right = 25.0
+grow_vertical = 0
+text = "1"
+
+[node name="Slot2" type="Control" parent="Control/Hotbar"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Control/Hotbar/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="Control/Hotbar/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 5
+expand_mode = 1
+texture_filter = 0
+
+[node name="Label" type="Label" parent="Control/Hotbar/Slot2"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -20.0
+offset_right = 25.0
+grow_vertical = 0
+text = "2"
+
+[node name="Slot3" type="Control" parent="Control/Hotbar"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="Control/Hotbar/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="Control/Hotbar/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 5
+expand_mode = 1
+texture_filter = 0
+
+[node name="Label" type="Label" parent="Control/Hotbar/Slot3"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -20.0
+offset_right = 25.0
+grow_vertical = 0
+text = "3"
