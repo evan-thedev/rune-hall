@@ -1,6 +1,6 @@
 # Rune Hall
 
-A 3D spell-FPS roguelike demo built in Godot 4.3.
+A 3D spell-FPS roguelike demo built in Godot 4.5.
 
 **Author:** Evan Parrott ([@evan-thedev](https://github.com/evan-thedev))  
 **License:** MIT
@@ -12,7 +12,7 @@ A 3D spell-FPS roguelike demo built in Godot 4.3.
 This is the Day 4 slice: three spells + looping floor.
 
 **What's included:**
-- Real Godot 4.3 3D project (CharacterBody3D + Camera3D)
+- Real Godot 4.5 3D project (CharacterBody3D + Camera3D)
 - Mouse look and WASD movement
 - Walkable dungeon with 4 rooms connected by corridors
 - **THREE spell types:**
@@ -52,14 +52,14 @@ This is the Day 4 slice: three spells + looping floor.
 
 ### Option 1: Open in Godot 4 Editor
 
-1. **Install Godot 4.3** from [godotengine.org](https://godotengine.org/download)
+1. **Install Godot 4.5** from [godotengine.org](https://godotengine.org/download)
 2. **Clone this repo:**
    ```bash
    git clone https://github.com/evan-thedev/rune-hall.git
    cd rune-hall
    ```
 3. **Open the project** in Godot 4:
-   - Launch Godot 4.3
+   - Launch Godot 4.5
    - Click "Import"
    - Navigate to the cloned folder and select `project.godot`
 4. **Press F5** or click the Play button to run
@@ -72,7 +72,7 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 
 ## Tech Stack
 
-- **Engine:** Godot 4.3 (stable)
+- **Engine:** Godot 4.5 (stable)
 - **Language:** GDScript
 - **Renderer:** OpenGL (Compatibility mode for web export)
 - **3D Geometry:** CSGBox3D (procedural rooms and corridors)
