@@ -11,7 +11,8 @@ shader = ExtResource("2_shader")
 script = ExtResource("1_viewmodel")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.15, -0.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, -0.28, -0.35)
+pixel_size = 0.0005
 billboard = 0
 texture_filter = 0
 material_override = SubResource("ShaderMaterial_1")
