@@ -1,12 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://b8qm2kx5n7wjp"]
+[gd_scene load_steps=4 format=3 uid="uid://b8qm2kx5n7wjp"]
 
 [ext_resource type="Script" path="res://scripts/enemy_shooter.gd" id="1_shooter"]
-[ext_resource type="Script" path="res://scripts/goblin_sprite_animator.gd" id="2_sprite"]
-[ext_resource type="Shader" path="res://shaders/sprite_chroma.gdshader" id="3_shader"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
-render_priority = 0
-shader = ExtResource("3_shader")
+[ext_resource type="PackedScene" uid="uid://cx8qm2kx5n7wjr" path="res://scenes/goblin_mesh_loot.tscn" id="2_mesh"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.5
@@ -19,13 +14,8 @@ script = ExtResource("1_shooter")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_1")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-pixel_size = 0.01
-billboard = 1
-texture_filter = 0
-material_override = SubResource("ShaderMaterial_1")
-script = ExtResource("2_sprite")
+[node name="GoblinMesh" parent="." instance=ExtResource("2_mesh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 
 [node name="Area3D" type="Area3D" parent="." groups=["enemy"]]
 

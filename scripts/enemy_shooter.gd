@@ -14,22 +14,11 @@ var is_dead = false
 
 const ENEMY_PROJECTILE = preload("res://scenes/enemy_projectile.tscn")
 
-@onready var sprite = $Sprite3D
+@onready var mesh_animator = $GoblinMesh
 
 func _ready():
 	add_to_group("enemy")
-	
-	# Load all loot goblin sprites
-	sprite.idle_texture = preload("res://sprites/loot-goblin-idle.png")
-	sprite.walk_front_texture = preload("res://sprites/loot-goblin-walk-front.png")
-	sprite.walk_back_texture = preload("res://sprites/loot-goblin-walk-back.png")
-	sprite.walk_left_texture = preload("res://sprites/loot-goblin-walk-left.png")
-	sprite.walk_right_texture = preload("res://sprites/loot-goblin-walk-right.png")
-	sprite.attack_texture = preload("res://sprites/loot-goblin-attack.png")
-	sprite.flinch_texture = preload("res://sprites/loot-goblin-flinch.png")
-	sprite.death_texture = preload("res://sprites/loot-goblin-death.png")
-	
-	sprite.set_state(sprite.AnimState.IDLE)
+	mesh_animator.set_state(mesh_animator.AnimState.IDLE)
 
 func _physics_process(delta):
 	if is_dead:
@@ -47,18 +36,18 @@ func _physics_process(delta):
 	if distance_to_player > ATTACK_RANGE:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
-		sprite.set_state(sprite.AnimState.WALK, direction)
+		mesh_animator.set_state(mesh_animator.AnimState.WALK, direction)
 	elif distance_to_player < MIN_RANGE:
 		velocity.x = -direction.x * SPEED
 		velocity.z = -direction.z * SPEED
-		sprite.set_state(sprite.AnimState.WALK, -direction)
+		mesh_animator.set_state(mesh_animator.AnimState.WALK, -direction)
 	else:
 		velocity.x = 0
 		velocity.z = 0
 		if try_attack():
-			sprite.set_state(sprite.AnimState.ATTACK)
+			mesh_animator.set_state(mesh_animator.AnimState.ATTACK)
 		else:
-			sprite.set_state(sprite.AnimState.IDLE)
+			mesh_animator.set_state(mesh_animator.AnimState.IDLE)
 	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -92,14 +81,14 @@ func take_damage(amount: float):
 	
 	# Show flinch animation
 	if health > 0:
-		sprite.set_state(sprite.AnimState.FLINCH)
+		mesh_animator.set_state(mesh_animator.AnimState.FLINCH)
 	
 	if health <= 0:
 		die()
 
 func die():
 	is_dead = true
-	sprite.set_state(sprite.AnimState.DEATH)
+	mesh_animator.set_state(mesh_animator.AnimState.DEATH)
 	# Wait for death animation (coin spill) before removing
 	await get_tree().create_timer(1.0).timeout
 	queue_free()
