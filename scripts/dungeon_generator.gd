@@ -6,8 +6,18 @@ const WALL_HEIGHT = 4.0
 const ENEMY_GRUNT = preload("res://scenes/enemy_basic.tscn")
 const ENEMY_SHOOTER = preload("res://scenes/enemy_shooter.tscn")
 
+var wall_texture: Texture2D
+var floor_texture: Texture2D
+var ceiling_texture: Texture2D
+
 func _ready():
+	load_textures()
 	generate_dungeon()
+
+func load_textures():
+	wall_texture = load("res://textures/tile-wall.png")
+	floor_texture = load("res://textures/tile-floor.png")
+	ceiling_texture = load("res://textures/tile-ceiling.png")
 
 func generate_dungeon():
 	var room_positions = [
@@ -41,9 +51,23 @@ func create_room(pos: Vector3, doors: Dictionary):
 	floor_mesh.use_collision = true
 	add_child(floor_mesh)
 	
-	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.3, 0.3, 0.35)
-	floor_mesh.material = mat
+	var floor_mat = StandardMaterial3D.new()
+	floor_mat.albedo_texture = floor_texture
+	floor_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	floor_mat.uv1_scale = Vector3(2, 2, 2)
+	floor_mesh.material = floor_mat
+	
+	var ceiling_mesh = CSGBox3D.new()
+	ceiling_mesh.size = Vector3(ROOM_SIZE, 0.5, ROOM_SIZE)
+	ceiling_mesh.position = pos + Vector3(ROOM_SIZE/2, WALL_HEIGHT + 0.25, ROOM_SIZE/2)
+	ceiling_mesh.use_collision = false
+	add_child(ceiling_mesh)
+	
+	var ceiling_mat = StandardMaterial3D.new()
+	ceiling_mat.albedo_texture = ceiling_texture
+	ceiling_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	ceiling_mat.uv1_scale = Vector3(2, 2, 2)
+	ceiling_mesh.material = ceiling_mat
 	
 	create_walls_with_doors(pos, doors)
 	add_lighting(pos + Vector3(ROOM_SIZE/2, WALL_HEIGHT - 0.5, ROOM_SIZE/2))
@@ -54,7 +78,9 @@ func create_walls_with_doors(room_pos: Vector3, doors: Dictionary):
 	var wall_segment_size = (ROOM_SIZE - door_width) / 2.0
 	
 	var mat = StandardMaterial3D.new()
-	mat.albedo_color = Color(0.4, 0.35, 0.3)
+	mat.albedo_texture = wall_texture
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	mat.uv1_scale = Vector3(2, 2, 2)
 	
 	if not doors.get("north", false):
 		var wall = CSGBox3D.new()
@@ -148,11 +174,29 @@ func create_corridor(start_pos: Vector3, direction: Vector3, length: float):
 	add_child(floor_mesh)
 	
 	var floor_mat = StandardMaterial3D.new()
-	floor_mat.albedo_color = Color(0.25, 0.25, 0.3)
+	floor_mat.albedo_texture = floor_texture
+	floor_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	floor_mat.uv1_scale = Vector3(2, 2, 2)
 	floor_mesh.material = floor_mat
 	
+	var ceiling_mesh = CSGBox3D.new()
+	ceiling_mesh.size = Vector3(abs(direction.x) * length + (1 - abs(direction.x)) * CORRIDOR_WIDTH,
+	                            0.5,
+	                            abs(direction.z) * length + (1 - abs(direction.z)) * CORRIDOR_WIDTH)
+	ceiling_mesh.position = start_pos + direction * length/2 + Vector3(0, WALL_HEIGHT + 0.25, 0)
+	ceiling_mesh.use_collision = false
+	add_child(ceiling_mesh)
+	
+	var ceiling_mat = StandardMaterial3D.new()
+	ceiling_mat.albedo_texture = ceiling_texture
+	ceiling_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	ceiling_mat.uv1_scale = Vector3(2, 2, 2)
+	ceiling_mesh.material = ceiling_mat
+	
 	var wall_mat = StandardMaterial3D.new()
-	wall_mat.albedo_color = Color(0.4, 0.35, 0.3)
+	wall_mat.albedo_texture = wall_texture
+	wall_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	wall_mat.uv1_scale = Vector3(2, 2, 2)
 	var wall_thickness = 0.5
 	
 	if abs(direction.x) > 0:
