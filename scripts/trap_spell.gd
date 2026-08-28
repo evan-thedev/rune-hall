@@ -35,6 +35,7 @@ func load_glyph_frames():
 			
 			if glyph_sprite and glyph_frames.size() > 0:
 				glyph_sprite.texture = glyph_frames[0]
+				_update_glyph_shader_texture()
 
 func _physics_process(delta):
 	time_alive += delta
@@ -50,6 +51,7 @@ func _physics_process(delta):
 			glyph_frame_time = 0.0
 			current_glyph_frame = (current_glyph_frame + 1) % glyph_frames.size()
 			glyph_sprite.texture = glyph_frames[current_glyph_frame]
+			_update_glyph_shader_texture()
 	
 	if time_alive > LIFETIME:
 		queue_free()
@@ -99,6 +101,14 @@ func spawn_ice_burst():
 	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	sprite.pixel_size = 0.02
 	sprite.position = Vector3(0, 0.5, 0)
+	
+	# Apply chroma key shader
+	var shader = load("res://shaders/sprite_chroma.gdshader")
+	if shader:
+		var mat = ShaderMaterial.new()
+		mat.shader = shader
+		sprite.material_override = mat
+	
 	burst_anim.add_child(sprite)
 	
 	var sheet = load("res://sprites/frosttrap-burst.png")
@@ -120,6 +130,10 @@ func spawn_ice_burst():
 		return
 	
 	sprite.texture = frames[0]
+	
+	# Set shader texture parameter
+	if sprite.material_override:
+		sprite.material_override.set_shader_parameter("texture_albedo", frames[0])
 	
 	burst_anim.set_script(FROST_BURST_SCRIPT)
 	burst_anim.set("frames", frames)
@@ -152,3 +166,7 @@ func spawn_ice_burst_fallback():
 	
 	var cleanup_timer = burst.get_tree().create_timer(0.5)
 	cleanup_timer.timeout.connect(func(): burst.queue_free())
+
+func _update_glyph_shader_texture():
+	if glyph_sprite and glyph_sprite.material_override and glyph_sprite.texture:
+		glyph_sprite.material_override.set_shader_parameter("texture_albedo", glyph_sprite.texture)

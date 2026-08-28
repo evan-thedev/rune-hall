@@ -14,5 +14,8 @@ func _process(delta):
 		if current_frame < frames.size():
 			if sprite:
 				sprite.texture = frames[current_frame]
+				# Update shader parameter for chroma keying
+				if sprite.material_override:
+					sprite.material_override.set_shader_parameter("texture_albedo", frames[current_frame])
 		else:
 			queue_free()
