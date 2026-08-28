@@ -88,6 +88,9 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 			current_frames = hframes_death
 			animation_locked = true
 			is_playing = true
+	
+	# Update shader parameter for chroma keying
+	_update_shader_texture()
 
 func _set_walk_texture(direction: Vector3):
 	# Choose walk sprite based on movement direction
@@ -111,3 +114,7 @@ func _set_walk_texture(direction: Vector3):
 			texture = walk_left_texture
 		else:
 			texture = walk_right_texture
+
+func _update_shader_texture():
+	if material_override and texture:
+		material_override.set_shader_parameter("texture_albedo", texture)

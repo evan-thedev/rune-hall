@@ -76,6 +76,9 @@ func update_sprite():
 	var frames = get_current_frames()
 	if frames.size() > 0 and sprite:
 		sprite.texture = frames[current_frame]
+		# Also set the shader texture parameter for chroma keying
+		if sprite.material_override:
+			sprite.material_override.set_shader_parameter("texture_albedo", frames[current_frame])
 
 func play_animation(anim_name: String):
 	current_animation = anim_name
