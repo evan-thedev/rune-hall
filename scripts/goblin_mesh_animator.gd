@@ -1,6 +1,14 @@
 extends Node3D
 
 # Goblin 3D mesh animator with simple transform-based animations
+#
+# ASSET SWAP INSTRUCTIONS:
+# When Asset Maker's GLBs arrive, update the goblin_mesh_*.tscn files:
+# 1. Remove or hide the temporary primitive mesh nodes (Body, Head, Arms, etc.)
+# 2. Add the GLB as a child MeshInstance3D or direct scene instance
+# 3. Keep this animator script attached to the root Node3D
+# 4. The transform animations will apply to the entire mesh hierarchy
+# 5. Verify the GLB mesh aligns with y=0.2 base position and ~1.6-1.8m height
 @export var idle_bob_speed: float = 2.0
 @export var idle_bob_amount: float = 0.05
 @export var walk_bob_speed: float = 8.0
