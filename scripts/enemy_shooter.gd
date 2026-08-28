@@ -6,8 +6,8 @@ const MIN_RANGE = 8.0
 const ATTACK_DAMAGE = 10.0
 const ATTACK_COOLDOWN = 2.0
 
-var max_health = 30.0
-var health = 30.0
+var max_health = 1.0
+var health = 1.0
 var player = null
 var last_attack_time = -999.0
 var is_dead = false
@@ -77,12 +77,6 @@ func take_damage(amount: float):
 		return
 	
 	health -= amount
-	health = max(0, health)
-	
-	# Show flinch animation
-	if health > 0:
-		mesh_animator.set_state(mesh_animator.AnimState.FLINCH)
-	
 	if health <= 0:
 		die()
 
