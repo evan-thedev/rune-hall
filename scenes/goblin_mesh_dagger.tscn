@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://bx8qm2kx5n7wjq"]
+
+[ext_resource type="Script" path="res://scripts/goblin_mesh_animator.gd" id="1_animator"]
+[ext_resource type="PackedScene" uid="uid://dagger123glb456" path="res://models/goblin-dagger.glb" id="2_glb"]
+
+[node name="GoblinMeshDagger" type="Node3D"]
+script = ExtResource("1_animator")
+
+[node name="GoblinModel" parent="." instance=ExtResource("2_glb")]
