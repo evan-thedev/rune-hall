@@ -1,32 +1,36 @@
 extends Node3D
 
-# Goblin 3D mesh animator - uses GLB animations from Asset Maker
+# Goblin 3D mesh animator - GLBs have Standing and Death mesh nodes
 
 enum AnimState { IDLE, WALK, ATTACK, FLINCH, DEATH }
 
 var current_state = AnimState.IDLE
-var animation_player: AnimationPlayer = null
+var standing_mesh: Node3D = null
+var death_mesh: Node3D = null
 var is_dying: bool = false
 
 func _ready():
-	# Find AnimationPlayer inside the instanced GoblinModel
+	# Find Standing and Death mesh nodes inside GoblinModel
 	var model = get_node_or_null("GoblinModel")
 	if model:
-		animation_player = _find_animation_player(model)
-		if animation_player:
-			# Start with Standing animation
-			if animation_player.has_animation("Standing"):
-				animation_player.play("Standing")
+		standing_mesh = _find_node_by_name(model, "Standing")
+		death_mesh = _find_node_by_name(model, "Death")
+		
+		# Show Standing, hide Death on spawn
+		if standing_mesh:
+			standing_mesh.visible = true
+		if death_mesh:
+			death_mesh.visible = false
 		
 		# Fix vertex colors for all mesh materials
 		_fix_vertex_colors(model)
 
-func _find_animation_player(node: Node) -> AnimationPlayer:
-	# Search for AnimationPlayer in the GLB instance
-	if node is AnimationPlayer:
+func _find_node_by_name(node: Node, target_name: String) -> Node3D:
+	# Search for node by name in the GLB instance
+	if node.name == target_name:
 		return node
 	for child in node.get_children():
-		var result = _find_animation_player(child)
+		var result = _find_node_by_name(child, target_name)
 		if result:
 			return result
 	return null
@@ -59,19 +63,16 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 	
 	current_state = new_state
 	
-	# Handle Death animation from GLB
+	# Handle Death by showing Death mesh, hiding Standing mesh
 	if new_state == AnimState.DEATH:
 		is_dying = true
-		if animation_player and animation_player.has_animation("Death"):
-			animation_player.play("Death")
+		if standing_mesh:
+			standing_mesh.visible = false
+		if death_mesh:
+			death_mesh.visible = true
 		return
 	
 	# Face the movement direction for walking
 	if new_state == AnimState.WALK and direction.length() > 0.1:
 		var target_angle = atan2(direction.x, direction.z)
 		rotation.y = target_angle
-	
-	# Play Standing animation for idle/walk/attack states
-	if animation_player and animation_player.has_animation("Standing"):
-		if not animation_player.is_playing() or animation_player.current_animation != "Standing":
-			animation_player.play("Standing")
