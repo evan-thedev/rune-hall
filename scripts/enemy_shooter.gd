@@ -83,6 +83,14 @@ func take_damage(amount: float):
 func die():
 	is_dead = true
 	mesh_animator.set_state(mesh_animator.AnimState.DEATH)
-	# Wait for death animation (coin spill) before removing
-	await get_tree().create_timer(1.0).timeout
+	
+	# Wait for GLB Death animation to complete
+	var anim_player = mesh_animator.get_node_or_null("AnimationPlayer")
+	if anim_player and anim_player.has_animation("Death"):
+		var death_length = anim_player.get_animation("Death").length
+		await get_tree().create_timer(death_length).timeout
+	else:
+		# Fallback wait time
+		await get_tree().create_timer(1.0).timeout
+	
 	queue_free()

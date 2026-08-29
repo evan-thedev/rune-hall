@@ -1,14 +1,6 @@
 extends Node3D
 
-# Goblin 3D mesh animator with simple transform-based animations
-#
-# ASSET SWAP INSTRUCTIONS:
-# When Asset Maker's GLBs arrive, update the goblin_mesh_*.tscn files:
-# 1. Remove or hide the temporary primitive mesh nodes (Body, Head, Arms, etc.)
-# 2. Add the GLB as a child MeshInstance3D or direct scene instance
-# 3. Keep this animator script attached to the root Node3D
-# 4. The transform animations will apply to the entire mesh hierarchy
-# 5. Verify the GLB mesh aligns with y=0.2 base position and ~1.6-1.8m height
+# Goblin 3D mesh animator - now uses GLB animations from Asset Maker
 @export var idle_bob_speed: float = 2.0
 @export var idle_bob_amount: float = 0.05
 @export var walk_bob_speed: float = 8.0
@@ -22,11 +14,16 @@ var animation_locked: bool = false
 var lock_timer: float = 0.0
 var base_y_position: float = 0.0
 var walk_direction: Vector3 = Vector3.ZERO
-
-@onready var mesh_root = self
+var animation_player: AnimationPlayer = null
 
 func _ready():
 	base_y_position = position.y
+	# Find AnimationPlayer in children
+	animation_player = get_node_or_null("AnimationPlayer")
+	if animation_player:
+		# Start with Standing animation
+		if animation_player.has_animation("Standing"):
+			animation_player.play("Standing")
 
 func _process(delta):
 	time_accumulator += delta
@@ -63,7 +60,18 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 	walk_direction = direction
 	time_accumulator = 0.0
 	
-	# Reset mesh to base position/rotation
+	# Handle GLB Death animation
+	if new_state == AnimState.DEATH:
+		if animation_player and animation_player.has_animation("Death"):
+			animation_player.play("Death")
+			animation_locked = true
+			return
+		else:
+			# Fallback to scripted death if no GLB animation
+			animation_locked = true
+			return
+	
+	# Reset mesh to base position/rotation for other states
 	position.y = base_y_position
 	rotation = Vector3.ZERO
 	scale = Vector3.ONE
@@ -73,6 +81,12 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 		var target_angle = atan2(direction.x, direction.z)
 		rotation.y = target_angle
 	
+	# Play Standing animation for idle/walk states
+	if animation_player and (new_state == AnimState.IDLE or new_state == AnimState.WALK):
+		if animation_player.has_animation("Standing"):
+			if not animation_player.is_playing() or animation_player.current_animation != "Standing":
+				animation_player.play("Standing")
+	
 	# Lock animations that should play once
 	match new_state:
 		AnimState.ATTACK:
@@ -81,8 +95,6 @@ func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
 		AnimState.FLINCH:
 			animation_locked = true
 			lock_timer = 0.3
-		AnimState.DEATH:
-			animation_locked = true
 
 func _animate_idle(_delta):
 	# Gentle bobbing
