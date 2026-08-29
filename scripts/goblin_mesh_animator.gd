@@ -1,134 +1,77 @@
 extends Node3D
 
-# Goblin 3D mesh animator - now uses GLB animations from Asset Maker
-@export var idle_bob_speed: float = 2.0
-@export var idle_bob_amount: float = 0.05
-@export var walk_bob_speed: float = 8.0
-@export var walk_bob_amount: float = 0.15
+# Goblin 3D mesh animator - uses GLB animations from Asset Maker
 
 enum AnimState { IDLE, WALK, ATTACK, FLINCH, DEATH }
 
 var current_state = AnimState.IDLE
-var time_accumulator: float = 0.0
-var animation_locked: bool = false
-var lock_timer: float = 0.0
-var base_y_position: float = 0.0
-var walk_direction: Vector3 = Vector3.ZERO
 var animation_player: AnimationPlayer = null
+var is_dying: bool = false
 
 func _ready():
-	base_y_position = position.y
-	# Find AnimationPlayer in children
-	animation_player = get_node_or_null("AnimationPlayer")
-	if animation_player:
-		# Start with Standing animation
-		if animation_player.has_animation("Standing"):
-			animation_player.play("Standing")
+	# Find AnimationPlayer inside the instanced GoblinModel
+	var model = get_node_or_null("GoblinModel")
+	if model:
+		animation_player = _find_animation_player(model)
+		if animation_player:
+			# Start with Standing animation
+			if animation_player.has_animation("Standing"):
+				animation_player.play("Standing")
+		
+		# Fix vertex colors for all mesh materials
+		_fix_vertex_colors(model)
 
-func _process(delta):
-	time_accumulator += delta
+func _find_animation_player(node: Node) -> AnimationPlayer:
+	# Search for AnimationPlayer in the GLB instance
+	if node is AnimationPlayer:
+		return node
+	for child in node.get_children():
+		var result = _find_animation_player(child)
+		if result:
+			return result
+	return null
+
+func _fix_vertex_colors(node: Node):
+	# Walk the mesh tree and enable vertex_color_use_as_albedo
+	if node is MeshInstance3D:
+		for i in range(node.get_surface_override_material_count()):
+			var mat = node.get_surface_override_material(i)
+			if mat and mat is StandardMaterial3D:
+				mat.vertex_color_use_as_albedo = true
+		
+		# Also check the main material
+		if node.mesh:
+			for i in range(node.mesh.get_surface_count()):
+				var mat = node.mesh.surface_get_material(i)
+				if mat and mat is StandardMaterial3D:
+					mat.vertex_color_use_as_albedo = true
 	
-	# Handle locked animation timers
-	if animation_locked:
-		lock_timer -= delta
-		if lock_timer <= 0:
-			animation_locked = false
-			set_state(AnimState.IDLE)
-	
-	# Apply animations based on state
-	match current_state:
-		AnimState.IDLE:
-			_animate_idle(delta)
-		AnimState.WALK:
-			_animate_walk(delta)
-		AnimState.ATTACK:
-			_animate_attack(delta)
-		AnimState.FLINCH:
-			_animate_flinch(delta)
-		AnimState.DEATH:
-			_animate_death(delta)
+	for child in node.get_children():
+		_fix_vertex_colors(child)
 
 func set_state(new_state: AnimState, direction: Vector3 = Vector3.ZERO):
-	# Don't interrupt locked animations
-	if animation_locked and new_state in [AnimState.IDLE, AnimState.WALK]:
+	# Don't change state if already dying
+	if is_dying:
 		return
 	
-	if current_state == new_state and direction.is_equal_approx(walk_direction):
+	if current_state == new_state:
 		return
 	
 	current_state = new_state
-	walk_direction = direction
-	time_accumulator = 0.0
 	
-	# Handle GLB Death animation
+	# Handle Death animation from GLB
 	if new_state == AnimState.DEATH:
+		is_dying = true
 		if animation_player and animation_player.has_animation("Death"):
 			animation_player.play("Death")
-			animation_locked = true
-			return
-		else:
-			# Fallback to scripted death if no GLB animation
-			animation_locked = true
-			return
-	
-	# Reset mesh to base position/rotation for other states
-	position.y = base_y_position
-	rotation = Vector3.ZERO
-	scale = Vector3.ONE
+		return
 	
 	# Face the movement direction for walking
 	if new_state == AnimState.WALK and direction.length() > 0.1:
 		var target_angle = atan2(direction.x, direction.z)
 		rotation.y = target_angle
 	
-	# Play Standing animation for idle/walk states
-	if animation_player and (new_state == AnimState.IDLE or new_state == AnimState.WALK):
-		if animation_player.has_animation("Standing"):
-			if not animation_player.is_playing() or animation_player.current_animation != "Standing":
-				animation_player.play("Standing")
-	
-	# Lock animations that should play once
-	match new_state:
-		AnimState.ATTACK:
-			animation_locked = true
-			lock_timer = 0.5
-		AnimState.FLINCH:
-			animation_locked = true
-			lock_timer = 0.3
-
-func _animate_idle(_delta):
-	# Gentle bobbing
-	var bob = sin(time_accumulator * idle_bob_speed) * idle_bob_amount
-	position.y = base_y_position + bob
-
-func _animate_walk(_delta):
-	# Walking bob
-	var bob = abs(sin(time_accumulator * walk_bob_speed)) * walk_bob_amount
-	position.y = base_y_position + bob
-	
-	# Slight side-to-side sway
-	var sway = sin(time_accumulator * walk_bob_speed) * 0.05
-	rotation.z = sway
-
-func _animate_attack(_delta):
-	# Quick forward lunge
-	var progress = min(time_accumulator / 0.5, 1.0)
-	if progress < 0.5:
-		# Lunge forward
-		scale.z = 1.0 + progress * 0.4
-	else:
-		# Return
-		scale.z = 1.0 + (1.0 - progress) * 0.4
-
-func _animate_flinch(_delta):
-	# Recoil back
-	var progress = min(time_accumulator / 0.3, 1.0)
-	scale.x = 1.0 - progress * 0.2
-	scale.y = 1.0 + progress * 0.1
-
-func _animate_death(_delta):
-	# Fall and shrink
-	var progress = min(time_accumulator / 1.0, 1.0)
-	rotation.x = progress * PI / 2
-	scale = Vector3.ONE * (1.0 - progress * 0.5)
-	position.y = base_y_position - progress * 0.8
+	# Play Standing animation for idle/walk/attack states
+	if animation_player and animation_player.has_animation("Standing"):
+		if not animation_player.is_playing() or animation_player.current_animation != "Standing":
+			animation_player.play("Standing")
