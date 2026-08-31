@@ -25,8 +25,8 @@ This is the Day 5 slice: polish, start menu, and web export.
 - **Crosshair HUD** - Aim with center-screen crosshair, current spell displayed
 - **HP system** - Player health displayed on screen
 - **TWO enemy types:**
-  - **Grunt** (melee) - Red capsule, chases and hits player in close range
-  - **Shooter** (ranged) - Blue capsule, fires projectiles from distance
+  - **Dagger Goblin** (melee) - 3D mesh, chases and hits player in close range
+  - **Loot Goblin** (ranged) - 3D mesh, fires projectiles from distance
 - **Die-and-retry** - Death reloads the floor, restart from beginning
 - **Looping floor** - Continue playing after clearing enemies, floor runs indefinitely
 - **Polish:** Readable lighting, muzzle flash and hit effects
