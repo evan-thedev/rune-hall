@@ -3,16 +3,18 @@
 A 3D spell-FPS roguelike demo built in Godot 4.5.
 
 **Author:** Evan Parrott ([@evan-thedev](https://github.com/evan-thedev))  
+**Contact:** coppercoffin@gmail.com  
 **License:** MIT
 
 ---
 
-## Day 4 Demo
+## Day 5 Demo
 
-This is the Day 4 slice: three spells + looping floor.
+This is the Day 5 slice: polish, start menu, and web export.
 
 **What's included:**
 - Real Godot 4.5 3D project (CharacterBody3D + Camera3D)
+- **Start menu** with controls and game info
 - Mouse look and WASD movement
 - Walkable dungeon with 4 rooms connected by corridors
 - **THREE spell types:**
@@ -27,12 +29,13 @@ This is the Day 4 slice: three spells + looping floor.
   - **Shooter** (ranged) - Blue capsule, fires projectiles from distance
 - **Die-and-retry** - Death reloads the floor, restart from beginning
 - **Looping floor** - Continue playing after clearing enemies, floor runs indefinitely
+- **Polish:** Readable lighting, muzzle flash and hit effects
+- **Web export:** GitHub Pages deployment at [https://evan-thedev.github.io/rune-hall/](https://evan-thedev.github.io/rune-hall/) (after merge + Actions)
 
-**What's NOT included yet (Day 5+):**
+**What's NOT included yet (Day 6+):**
 - Pixel art billboards (separate PR)
 - Random room generation
 - Meta progression
-- Web export / GitHub Pages deployment
 
 ---
 
@@ -43,14 +46,20 @@ This is the Day 4 slice: three spells + looping floor.
 - **1**: Select Projectile Bolt
 - **2**: Select Cone Blast
 - **3**: Select Trap Rune
-- **Left Click**: Cast currently selected spell
+- **LMB (Left Click)**: Cast currently selected spell
 - **ESC**: Release/capture mouse
 
 ---
 
 ## How to Run
 
-### Option 1: Open in Godot 4 Editor
+### Option 1: Play in Browser (Web)
+
+Play the live version at: **[https://evan-thedev.github.io/rune-hall/](https://evan-thedev.github.io/rune-hall/)**
+
+(Available after merge to main + GitHub Actions deployment)
+
+### Option 2: Open in Godot 4 Editor
 
 1. **Install Godot 4.5** from [godotengine.org](https://godotengine.org/download)
 2. **Clone this repo:**
@@ -64,9 +73,9 @@ This is the Day 4 slice: three spells + looping floor.
    - Navigate to the cloned folder and select `project.godot`
 4. **Press F5** or click the Play button to run
 
-### Option 2: Export and Run
+### Option 3: Export and Run
 
-Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be added after Day 1 review.
+Godot 4.5 can export to Linux, Windows, macOS, and Web. Web export is configured and automatically deployed to GitHub Pages on merge to main.
 
 ---
 
@@ -85,8 +94,8 @@ Godot 4 can export to Linux, Windows, macOS, and Web (HTML5). Exports will be ad
 - [x] Day 2: Projectile spell + HP + crosshair + basic enemy
 - [x] Day 3: Two enemy types (grunt + shooter) + die-and-retry
 - [x] Day 4: Three spells (projectile, cone, trap) + looping floor
-- [ ] Day 4B: Pixel art integration (separate PR)
-- [ ] Day 5: Web export + GitHub Pages deployment
+- [x] Day 5: Polish (lighting, juice, start menu) + web export + GitHub Pages deployment
+- [ ] Day 6+: Pixel art integration, random generation, meta progression
 
 ---
 
