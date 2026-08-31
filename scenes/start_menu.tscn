@@ -1,0 +1,108 @@
+[gd_scene load_steps=2 format=3 uid="uid://start_menu_001"]
+
+[ext_resource type="Script" path="res://scripts/start_menu.gd" id="1_start_menu"]
+
+[node name="StartMenu" type="CanvasLayer"]
+script = ExtResource("1_start_menu")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.08, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "RUNE HALL"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "A 3D Spell-FPS Demo"
+horizontal_alignment = 1
+
+[node name="Spacer1" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="ControlsLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "CONTROLS"
+horizontal_alignment = 1
+
+[node name="ControlsList" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Move" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "WASD - Move"
+horizontal_alignment = 1
+
+[node name="Look" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "Mouse - Look Around"
+horizontal_alignment = 1
+
+[node name="Spell1" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "1 - Select Projectile Bolt"
+horizontal_alignment = 1
+
+[node name="Spell2" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "2 - Select Cone Blast"
+horizontal_alignment = 1
+
+[node name="Spell3" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "3 - Select Trap Rune"
+horizontal_alignment = 1
+
+[node name="Fire" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "LMB - Cast Spell"
+horizontal_alignment = 1
+
+[node name="Pause" type="Label" parent="CenterContainer/VBoxContainer/ControlsList"]
+layout_mode = 2
+text = "ESC - Release Mouse"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "START GAME"
+
+[node name="Spacer3" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Credits" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "By Evan Parrott | MIT License"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]

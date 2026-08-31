@@ -5,6 +5,7 @@ const MOUSE_SENSITIVITY = 0.003
 const PROJECTILE_SPELL = preload("res://scenes/projectile_spell.tscn")
 const CONE_SPELL = preload("res://scenes/cone_spell.tscn")
 const TRAP_SPELL = preload("res://scenes/trap_spell.tscn")
+const MUZZLE_FLASH = preload("res://scenes/muzzle_flash.tscn")
 
 @onready var camera = $Camera3D
 @onready var viewmodel = $Camera3D/Viewmodel
@@ -79,6 +80,8 @@ func cast_spell():
 	
 	last_spell_time = current_time
 	
+	spawn_muzzle_flash()
+	
 	if viewmodel:
 		viewmodel.cast_spell(current_spell)
 	
@@ -88,6 +91,11 @@ func cast_spell():
 		cast_cone()
 	elif current_spell == 3:
 		cast_trap()
+
+func spawn_muzzle_flash():
+	var flash = MUZZLE_FLASH.instantiate()
+	camera.add_child(flash)
+	flash.position = Vector3(0, 0, -0.5)
 
 func cast_projectile():
 	var projectile = PROJECTILE_SPELL.instantiate()
