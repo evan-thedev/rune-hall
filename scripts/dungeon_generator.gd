@@ -231,9 +231,9 @@ func create_corridor(start_pos: Vector3, direction: Vector3, length: float):
 func add_lighting(pos: Vector3):
 	var light = OmniLight3D.new()
 	light.position = pos
-	light.light_energy = 0.8
-	light.light_color = Color(1.0, 0.9, 0.7)
-	light.omni_range = 15.0
+	light.light_energy = 1.2
+	light.light_color = Color(1.0, 0.95, 0.8)
+	light.omni_range = 18.0
 	add_child(light)
 
 func spawn_enemies(room_positions: Array):
