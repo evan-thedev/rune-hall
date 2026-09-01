@@ -30,10 +30,10 @@ This is the Day 5 slice: polish, start menu, and web export.
 - **Die-and-retry** - Death reloads the floor, restart from beginning
 - **Looping floor** - Continue playing after clearing enemies, floor runs indefinitely
 - **Polish:** Readable lighting, muzzle flash and hit effects
-- **Web export:** GitHub Pages deployment at [https://evan-thedev.github.io/rune-hall/](https://evan-thedev.github.io/rune-hall/) (after merge + Actions)
+- **Web export:** GitHub Pages deployment at [https://evan-thedev.github.io/rune-hall/](https://evan-thedev.github.io/rune-hall/)
 
 **What's NOT included yet (Day 6+):**
-- Pixel art billboards (separate PR)
+- Advanced enemy behaviors and additional enemy types
 - Random room generation
 - Meta progression
 
@@ -56,8 +56,6 @@ This is the Day 5 slice: polish, start menu, and web export.
 ### Option 1: Play in Browser (Web)
 
 Play the live version at: **[https://evan-thedev.github.io/rune-hall/](https://evan-thedev.github.io/rune-hall/)**
-
-(Available after merge to main + GitHub Actions deployment)
 
 ### Option 2: Open in Godot 4 Editor
 
